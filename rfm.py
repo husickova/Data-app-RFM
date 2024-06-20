@@ -102,12 +102,6 @@ try:
         fig = px.histogram(rfm_df, x='Monetary', title='Monetary')
         st.plotly_chart(fig)
 
-    # Vytvoření hlavního grafu pomocí Plotly
-    fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
-    
-    # Zobrazení hlavního grafu ve Streamlit
-    st.plotly_chart(fig)
-
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
 except Exception as e:
