@@ -93,7 +93,8 @@ try:
             selected_button = 'Monetary'
 
     # Create a selectbox for category selection
-    selected_category = st.sidebar.selectbox('Select a category to display:', category_counts['Category'])
+    category_options = ['All'] + category_counts['Category'].tolist()
+    selected_category = st.sidebar.selectbox('Select a category to display:', category_options)
 
     # Display the graph based on the selected button
     if selected_button == 'Recency':
@@ -102,23 +103,4 @@ try:
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Frequency':
-        fig = px.histogram(rfm_df, x='Frequency', title='Frequency', color_discrete_sequence=['dodgerblue'])
-        st.plotly_chart(fig)
-        st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
-
-    if selected_button == 'Monetary':
-        fig = px.histogram(rfm_df, x='Monetary', title='Monetary', color_discrete_sequence=['dodgerblue'])
-        st.plotly_chart(fig)
-        st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
-
-    # Filter data based on the selected category
-    filtered_category_df = rfm_df[rfm_df['Category'] == selected_category]
-
-    # Display the main graph for the selected category using Plotly
-    fig = px.bar(filtered_category_df, x='id', y='Monetary', title=f'Monetary value for {selected_category}', labels={'id': 'Customer ID', 'Monetary': 'Monetary Value'}, color_discrete_sequence=['dodgerblue'])
-    st.plotly_chart(fig)
-
-except FileNotFoundError:
-    st.error(f"File not found at path {csv_path}.")
-except Exception as e:
-    st.error(f"An error occurred while loading the file: {e}")
+        fig = px.histogram(rfm_df
