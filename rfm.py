@@ -3,12 +3,12 @@ import pandas as pd
 from datetime import datetime, timedelta
 import plotly.express as px
 
-# Titulek aplikace s barevným textem
+# Application title with colored text
 st.markdown("""
 # RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
 """, unsafe_allow_html=True)
 
-# Funkce pro přiřazení kategorií na základě RFM skóre
+# Function to assign categories based on RFM score
 def assign_category(rfm_score):
     if rfm_score >= 555:
         return '01. Champions'
@@ -33,22 +33,22 @@ def assign_category(rfm_score):
     else:
         return '11. Lost'
 
-# Načtení CSV souboru
+# Load CSV file
 csv_path = "rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
-    # Převod sloupce 'date' na typ datetime
+    # Convert 'date' column to datetime type
     df['date'] = pd.to_datetime(df['date'])
     
-    # Vytvoření interaktivních polí pro výběr datumu v postranním panelu
+    # Create interactive date selection fields in the sidebar
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
     
-    # Filtrování dat podle vybraných dat
+    # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
-    # Vypočítání RFM hodnot
+    # Calculate RFM values
     max_date = filtered_df['date'].max() + timedelta(days=1)
     rfm_df = filtered_df.groupby('id').agg({
         'date': lambda x: (max_date - x.max()).days,
@@ -60,21 +60,21 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalizace RFM hodnot pomocí pd.cut
+    # Normalize RFM values using pd.cut
     rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=5, labels=['5', '4', '3', '2', '1'])
     rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=5, labels=['1', '2', '3', '4', '5'])
     rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=5, labels=['1', '2', '3', '4', '5'])
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
-    # Kategorie na základě RFM skóre
+    # Assign categories based on RFM score
     rfm_df['Category'] = rfm_df['RFM_Score'].apply(lambda x: assign_category(int(x[0] + x[1])))
 
-    # Spočítání řádků v jednotlivých kategoriích
+    # Count rows in each category
     category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
     category_counts.columns = ['Category', 'Count']
     
-    # Vytvoření sloupců pro tlačítka
+    # Create columns for buttons
     col1, col2, col3 = st.columns(3)
 
     selected_button = None
@@ -89,20 +89,29 @@ try:
         if st.button('Monetary'):
             selected_button = 'Monetary'
 
-    # Zobrazení grafu na základě vybraného tlačítka
+    # Display the graph based on the selected button
     if selected_button == 'Recency':
-        fig = px.histogram(rfm_df, x='Recency', title='Recency')
+        fig = px.histogram(rfm_df, x='Recency', title='Recency', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
+        st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Frequency':
-        fig = px.histogram(rfm_df, x='Frequency', title='Frequency')
+        fig = px.histogram(rfm_df, x='Frequency', title='Frequency', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
+        st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Monetary':
-        fig = px.histogram(rfm_df, x='Monetary', title='Monetary')
+        fig = px.histogram(rfm_df, x='Monetary', title='Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
+        st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
+
+    # Create the main graph using Plotly
+    fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'}, color_discrete_sequence=['dodgerblue'])
+    
+    # Display the main graph in Streamlit
+    st.plotly_chart(fig)
 
 except FileNotFoundError:
-    st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
+    st.error(f"File not found at path {csv_path}.")
 except Exception as e:
-    st.error(f"Došlo k chybě při načítání souboru: {e}")
+    st.error(f"An error occurred while loading the file: {e}")
