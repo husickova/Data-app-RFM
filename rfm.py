@@ -8,7 +8,7 @@ st.set_page_config(page_title="RFM", layout="centered")
 st.title("RFM for Keboola by Bytegarden")
 
 # Načtení CSV souboru
-csv_path = "husickova/Data-app-RFM/rfm.csv"
+csv_path = "husickova/Data-app-RFM/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     # Zobrazení tabulky
