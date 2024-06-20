@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timedelta
 import plotly.express as px
 
 # Titulek aplikace s barevným textem
@@ -38,64 +38,75 @@ csv_path = "rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
-    # Kontrola, zda DataFrame obsahuje sloupec s datem
-    if 'date' not in df.columns:
-        st.error("DataFrame neobsahuje sloupec 'date'.")
-    else:
-        # Převod sloupce 'date' na typ datetime
-        df['date'] = pd.to_datetime(df['date'])
-        
-        # Vytvoření interaktivních polí pro výběr datumu v postranním panelu
-        start_date = st.sidebar.date_input('Start date', df['date'].min().date())
-        end_date = st.sidebar.date_input('End date', df['date'].max().date())
-        
-        # Filtrování dat podle vybraných dat
-        filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
-        
-        # Počet opakování ID
-        id_counts = filtered_df['id'].value_counts().reset_index()
-        id_counts.columns = ['id', 'count']
-        
-        # Přiřazení kategorií
-        id_counts['Category'] = id_counts['count'].apply(assign_category)
-        
-        # Spočítání řádků v jednotlivých kategoriích
-        category_counts = id_counts['Category'].value_counts().sort_index().reset_index()
-        category_counts.columns = ['Category', 'Count']
+    # Převod sloupce 'date' na typ datetime
+    df['date'] = pd.to_datetime(df['date'])
+    
+    # Vytvoření interaktivních polí pro výběr datumu v postranním panelu
+    start_date = st.sidebar.date_input('Start date', df['date'].min().date())
+    end_date = st.sidebar.date_input('End date', df['date'].max().date())
+    
+    # Filtrování dat podle vybraných dat
+    filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
+    
+    # Vypočítání RFM hodnot
+    max_date = filtered_df['date'].max() + timedelta(days=1)
+    rfm_df = filtered_df.groupby('id').agg({
+        'date': lambda x: (max_date - x.max()).days,
+        'id': 'count',
+        'value': 'sum'
+    }).rename(columns={
+        'date': 'Recency',
+        'id': 'Frequency',
+        'value': 'Monetary'
+    }).reset_index()
+    
+    # Normalizace RFM hodnot
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], 5, ['5', '4', '3', '2', '1'])
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], 5, ['1', '2', '3', '4', '5'])
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], 5, ['1', '2', '3', '4', '5'])
+    
+    rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
+    
+    # Kategorie na základě RFM skóre
+    rfm_df['Category'] = rfm_df['RFM_Score'].apply(lambda x: assign_category(int(x[0] + x[1])))
 
-        # Vytvoření sloupců pro tlačítka
-        col1, col2, col3 = st.columns(3)
+    # Spočítání řádků v jednotlivých kategoriích
+    category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
+    category_counts.columns = ['Category', 'Count']
+    
+    # Vytvoření sloupců pro tlačítka
+    col1, col2, col3 = st.columns(3)
 
-        selected_button = None
+    selected_button = None
 
-        with col1:
-            if st.button('Recency'):
-                selected_button = 'Recency'
-        with col2:
-            if st.button('Frequency'):
-                selected_button = 'Frequency'
-        with col3:
-            if st.button('Monetary'):
-                selected_button = 'Monetary'
+    with col1:
+        if st.button('Recency'):
+            selected_button = 'Recency'
+    with col2:
+        if st.button('Frequency'):
+            selected_button = 'Frequency'
+    with col3:
+        if st.button('Monetary'):
+            selected_button = 'Monetary'
 
-        # Zobrazení grafu na základě vybraného tlačítka
-        if selected_button == 'Recency':
-            fig = px.histogram(filtered_df, x='date', title='Recency')
-            st.plotly_chart(fig)
-
-        if selected_button == 'Frequency':
-            fig = px.histogram(filtered_df, x='id', title='Frequency')
-            st.plotly_chart(fig)
-
-        if selected_button == 'Monetary':
-            fig = px.histogram(filtered_df, x='count', title='Monetary')
-            st.plotly_chart(fig)
-
-        # Vytvoření hlavního grafu pomocí Plotly
-        fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
-        
-        # Zobrazení hlavního grafu ve Streamlit
+    # Zobrazení grafu na základě vybraného tlačítka
+    if selected_button == 'Recency':
+        fig = px.histogram(rfm_df, x='Recency', title='Recency')
         st.plotly_chart(fig)
+
+    if selected_button == 'Frequency':
+        fig = px.histogram(rfm_df, x='Frequency', title='Frequency')
+        st.plotly_chart(fig)
+
+    if selected_button == 'Monetary':
+        fig = px.histogram(rfm_df, x='Monetary', title='Monetary')
+        st.plotly_chart(fig)
+
+    # Vytvoření hlavního grafu pomocí Plotly
+    fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
+    
+    # Zobrazení hlavního grafu ve Streamlit
+    st.plotly_chart(fig)
 
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
