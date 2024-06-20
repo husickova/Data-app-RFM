@@ -62,7 +62,20 @@ try:
         # Spočítání řádků v jednotlivých kategoriích
         category_counts = id_counts['Category'].value_counts().sort_index().reset_index()
         category_counts.columns = ['Category', 'Count']
+        
+        # Vytvoření sloupců pro tlačítka
+        col1, col2, col3 = st.columns(3)
 
+        with col1:
+            if st.button('Recency'):
+                selected_button = 'Recency'
+        with col2:
+            if st.button('Frequency'):
+                selected_button = 'Frequency'
+        with col3:
+            if st.button('Monetary'):
+                selected_button = 'Monetary'
+        
         # Tři tlačítka pro výběr grafů
         if st.button('Recency'):
             fig = px.histogram(filtered_df, x='date', title='Recency')
