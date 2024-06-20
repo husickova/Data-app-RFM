@@ -32,7 +32,7 @@ def assign_category(repeat_count):
         return '11. Lost'
 
 # Načtení CSV souboru
-csv_path = "/mnt/data/rfm-data.csv"
+csv_path = "rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
