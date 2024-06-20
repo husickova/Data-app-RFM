@@ -1,11 +1,14 @@
 import streamlit as st
 import pandas as pd
 
+# Set the page configuration
+st.set_page_config(page_title="RFM", layout="centered")
+
 # Titulek aplikace
 st.title("RFM for Keboola by Bytegarden")
 
 # Načtení CSV souboru
-csv_path = "in/tables/rfm_data.csv"
+csv_path = "husickova/Data-app-RFM/rfm.csv"
 try:
     df = pd.read_csv(csv_path)
     # Zobrazení tabulky
