@@ -15,15 +15,15 @@ def assign_category(repeat_count):
         return '02. Loyal Customers'
     elif 24 <= repeat_count <= 33:
         return '03. Potential Loyalists'
-    elif repeat_count == 21:
+    elif 15 <= repeat_count <= 23:
         return '04. Recent Customers'
-    elif repeat_count == 14:
+    elif 10 <= repeat_count <= 15:
         return '05. Promising'
-    elif repeat_count == 13:
+    elif 7 <= repeat_count <= 10:
         return '06. Need Attention'
-    elif 11 <= repeat_count <= 12:
+    elif 5 <= repeat_count <= 6:
         return '07. About to Sleep'
-    elif repeat_count == 25:
+    elif repeat_count == 4:
         return '08. Can\'t Lose'
     elif 3 <= repeat_count <= 4:
         return '09. At Risk'
