@@ -105,12 +105,6 @@ try:
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
-    # Create the main graph using Plotly
-    fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'}, color_discrete_sequence=['dodgerblue'])
-    
-    # Display the main graph in Streamlit
-    st.plotly_chart(fig)
-
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
