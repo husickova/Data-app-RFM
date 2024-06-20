@@ -9,29 +9,32 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Function to assign categories based on RFM score
-def assign_category(rfm_score):
-    if rfm_score >= 555:
+def assign_category(r, f):
+    rfm_score = f"{r}{f}"
+    if rfm_score in ['54', '55']:
         return '01. Champions'
-    elif rfm_score >= 455:
+    elif rfm_score in ['34', '35', '44', '45']:
         return '02. Loyal Customers'
-    elif rfm_score >= 355:
+    elif rfm_score in ['42', '43', '52', '53']:
         return '03. Potential Loyalists'
-    elif rfm_score >= 255:
+    elif rfm_score == '51':
         return '04. Recent Customers'
-    elif rfm_score >= 155:
+    elif rfm_score == '41':
         return '05. Promising'
-    elif rfm_score >= 115:
+    elif rfm_score == '33':
         return '06. Need Attention'
-    elif rfm_score >= 105:
+    elif rfm_score in ['31', '32']:
         return '07. About to Sleep'
-    elif rfm_score >= 75:
+    elif rfm_score in ['15', '25']:
         return '08. Can\'t Lose'
-    elif rfm_score >= 55:
+    elif rfm_score in ['13', '14', '23', '24']:
         return '09. At Risk'
-    elif rfm_score >= 15:
+    elif rfm_score in ['21', '22']:
         return '10. Hibernating'
-    else:
+    elif rfm_score in ['11', '12']:
         return '11. Lost'
+    else:
+        return 'Uncategorized'
 
 # Load CSV file
 csv_path = "rfm-data.csv"
@@ -67,8 +70,8 @@ try:
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
-    # Assign categories based on RFM score
-    rfm_df['Category'] = rfm_df['RFM_Score'].apply(lambda x: assign_category(int(x[0] + x[1])))
+    # Assign categories based on R and F scores
+    rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
 
     # Count rows in each category
     category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
