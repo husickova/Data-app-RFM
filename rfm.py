@@ -2,36 +2,37 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import plotly.express as px
+import re
 
 # Application title with colored text
 st.markdown("""
 # RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
 """, unsafe_allow_html=True)
 
-# Function to assign categories based on RFM score
+# Function to assign categories based on R and F scores using regex
 def assign_category(r, f):
     rfm_score = f"{r}{f}"
-    if rfm_score in ['54', '55']:
+    if re.match(r'5[4-5]', rfm_score):
         return '01. Champions'
-    elif rfm_score in ['34', '35', '44', '45']:
+    elif re.match(r'[3-4][4-5]', rfm_score):
         return '02. Loyal Customers'
-    elif rfm_score in ['42', '43', '52', '53']:
+    elif re.match(r'[4-5][2-3]', rfm_score):
         return '03. Potential Loyalists'
-    elif rfm_score == '51':
+    elif re.match(r'51', rfm_score):
         return '04. Recent Customers'
-    elif rfm_score == '41':
+    elif re.match(r'41', rfm_score):
         return '05. Promising'
-    elif rfm_score == '33':
+    elif re.match(r'33', rfm_score):
         return '06. Need Attention'
-    elif rfm_score in ['31', '32']:
+    elif re.match(r'3[1-2]', rfm_score):
         return '07. About to Sleep'
-    elif rfm_score in ['15', '25']:
+    elif re.match(r'[1-2][5]', rfm_score):
         return '08. Can\'t Lose'
-    elif rfm_score in ['13', '14', '23', '24']:
+    elif re.match(r'[1-2][3-4]', rfm_score):
         return '09. At Risk'
-    elif rfm_score in ['21', '22']:
+    elif re.match(r'2[1-2]', rfm_score):
         return '10. Hibernating'
-    elif rfm_score in ['11', '12']:
+    elif re.match(r'1[1-2]', rfm_score):
         return '11. Lost'
     else:
         return 'Uncategorized'
@@ -70,7 +71,7 @@ try:
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
-    # Assign categories based on R and F scores
+    # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
 
     # Count rows in each category
