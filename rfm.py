@@ -1,9 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-# Set the page configuration
-st.set_page_config(page_title="RFM", layout="centered")
-
 # Titulek aplikace
 st.title("RFM for Keboola by Bytegarden")
 
