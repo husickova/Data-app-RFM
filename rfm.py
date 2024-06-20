@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import plotly.express as px
 
 # Titulek aplikace s barevným textem
 st.markdown("""
@@ -59,10 +60,14 @@ try:
         id_counts['Category'] = id_counts['count'].apply(assign_category)
         
         # Spočítání řádků v jednotlivých kategoriích
-        category_counts = id_counts['Category'].value_counts().sort_index()
+        category_counts = id_counts['Category'].value_counts().sort_index().reset_index()
+        category_counts.columns = ['Category', 'Count']
 
-        # Vytvoření grafu pomocí Streamlit
-        st.bar_chart(category_counts)
+        # Vytvoření grafu pomocí Plotly
+        fig = px.bar(category_counts, x='Category', y='Count', title='Počet řádků v jednotlivých kategoriích', labels={'Count': 'Počet řádků', 'Category': 'Kategorie'})
+        
+        # Zobrazení grafu ve Streamlit
+        st.plotly_chart(fig)
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
