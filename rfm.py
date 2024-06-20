@@ -34,7 +34,7 @@ def assign_category(rfm_score):
         return '11. Lost'
 
 # Načtení CSV souboru
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -61,15 +61,14 @@ try:
     }).reset_index()
     
     # Normalizace RFM hodnot
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], 5, ['5', '4', '3', '2', '1'], duplicates='drop')
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], 5, ['1', '2', '3', '4', '5'], duplicates='drop')
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], 5, ['1', '2', '3', '4', '5'], duplicates='drop')
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=['5', '4', '3', '2', '1'], duplicates='drop')
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=['1', '2', '3', '4', '5'], duplicates='drop')
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=['1', '2', '3', '4', '5'], duplicates='drop')
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
-    rfm_df['RFM_Score'] = rfm_df['RFM_Score'].astype(int)
 
     # Kategorie na základě RFM skóre
-    rfm_df['Category'] = rfm_df['RFM_Score'].apply(assign_category)
+    rfm_df['Category'] = rfm_df['RFM_Score'].apply(lambda x: assign_category(int(x[0] + x[1])))
 
     # Spočítání řádků v jednotlivých kategoriích
     category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
