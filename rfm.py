@@ -26,7 +26,7 @@ def assign_category(repeat_count):
         return '08. Can\'t Lose'
     elif 13 <= repeat_count <= 14:
         return '09. At Risk'
-    elif 12 <= repeat_count <= 11:
+    elif 12 <= repeat_count <= 5:
         return '10. Hibernating'
     else:
         return '11. Lost'
