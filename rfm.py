@@ -3,7 +3,7 @@ import pandas as pd
 
 # Titulek aplikace s barevným textem
 st.markdown("""
-# RFM for <span style="color:mediumblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
+# RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
 """, unsafe_allow_html=True)
 
 # Načtení CSV souboru
