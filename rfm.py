@@ -63,12 +63,6 @@ try:
         category_counts = id_counts['Category'].value_counts().sort_index().reset_index()
         category_counts.columns = ['Category', 'Count']
 
-        # Vytvoření hlavního grafu pomocí Plotly
-        fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
-        
-        # Zobrazení hlavního grafu ve Streamlit
-        st.plotly_chart(fig)
-        
         # Tři tlačítka pro výběr grafů
         if st.button('Recency'):
             fig = px.histogram(filtered_df, x='date', title='Recency')
@@ -81,6 +75,13 @@ try:
         if st.button('Monetary'):
             fig = px.histogram(filtered_df, x='date', title='Monetary')
             st.plotly_chart(fig)
+            
+        # Vytvoření hlavního grafu pomocí Plotly
+        fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
+        
+        # Zobrazení hlavního grafu ve Streamlit
+        st.plotly_chart(fig)
+        
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
