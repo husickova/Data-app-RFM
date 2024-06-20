@@ -6,7 +6,7 @@ import re
 
 # Application title with colored text
 st.markdown("""
-# RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
+# RFM by <span style="color:dodgerblue">Keboola</span>
 """, unsafe_allow_html=True)
 
 # Function to assign categories based on R and F scores using regex
@@ -74,8 +74,17 @@ try:
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
 
+    # Sort categories by numeric order
+    category_order = [
+        '01. Champions', '02. Loyal Customers', '03. Potential Loyalists',
+        '04. Recent Customers', '05. Promising', '06. Need Attention',
+        '07. About to Sleep', '08. Can\'t Lose', '09. At Risk',
+        '10. Hibernating', '11. Lost'
+    ]
+    rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
+
     # Create a selectbox for category selection
-    category_options = ['All'] + rfm_df['Category'].unique().tolist()
+    category_options = ['All'] + category_order
     selected_category = st.sidebar.selectbox('Select a category to display:', category_options)
     
     # Filter data based on the selected category
