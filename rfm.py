@@ -74,10 +74,16 @@ try:
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
 
-    # Count rows in each category
-    category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
-    category_counts.columns = ['Category', 'Count']
+    # Create a selectbox for category selection
+    category_options = ['All'] + rfm_df['Category'].unique().tolist()
+    selected_category = st.sidebar.selectbox('Select a category to display:', category_options)
     
+    # Filter data based on the selected category
+    if selected_category != 'All':
+        filtered_category_df = rfm_df[rfm_df['Category'] == selected_category]
+    else:
+        filtered_category_df = rfm_df
+
     # Create columns for buttons
     col1, col2, col3 = st.columns(3)
 
@@ -93,23 +99,19 @@ try:
         if st.button('Monetary'):
             selected_button = 'Monetary'
 
-    # Create a selectbox for category selection
-    category_options = ['All'] + category_counts['Category'].tolist()
-    selected_category = st.sidebar.selectbox('Select a category to display:', category_options)
-
     # Display the graph based on the selected button
     if selected_button == 'Recency':
-        fig = px.histogram(rfm_df, x='Recency', title='Recency', color_discrete_sequence=['dodgerblue'])
+        fig = px.histogram(filtered_category_df, x='Recency', title='Recency', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Frequency':
-        fig = px.histogram(rfm_df, x='Frequency', title='Frequency', color_discrete_sequence=['dodgerblue'])
+        fig = px.histogram(filtered_category_df, x='Frequency', title='Frequency', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Monetary':
-        fig = px.histogram(rfm_df, x='Monetary', title='Monetary', color_discrete_sequence=['dodgerblue'])
+        fig = px.histogram(filtered_category_df, x='Monetary', title='Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
