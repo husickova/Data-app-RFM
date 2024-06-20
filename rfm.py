@@ -64,7 +64,7 @@ try:
         category_counts.columns = ['Category', 'Count']
 
         # Vytvoření grafu pomocí Plotly
-        fig = px.bar(category_counts, x='Category', y='Count', title='Počet řádků v jednotlivých kategoriích', labels={'Count': 'Počet řádků', 'Category': 'Kategorie'})
+        fig = px.bar(category_counts, x='Category', y='Count', title='How many in each category', labels={'Count': 'Count', 'Category': 'Category'})
         
         # Zobrazení grafu ve Streamlit
         st.plotly_chart(fig)
