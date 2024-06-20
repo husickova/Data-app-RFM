@@ -69,21 +69,18 @@ try:
         # Zobrazení hlavního grafu ve Streamlit
         st.plotly_chart(fig)
         
-        # Tři pole pro další grafy s fialovým podbarvením
-        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
-        st.markdown('## Recency')
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.plotly_chart(px.histogram(filtered_df, x='date', title='Recency'))
+        # Tři tlačítka pro výběr grafů
+        if st.button('Recency'):
+            fig = px.histogram(filtered_df, x='date', title='Recency')
+            st.plotly_chart(fig)
+            
+        if st.button('Frequency'):
+            fig = px.histogram(filtered_df, x='date', title='Recency')
+            st.plotly_chart(fig)
 
-        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
-        st.markdown('## Frequency')
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.plotly_chart(px.histogram(filtered_df, x='id', title='Frequency'))
-
-        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
-        st.markdown('## Monetary')
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.plotly_chart(px.histogram(filtered_df, x='count', title='Monetary'))
+        if st.button('Monetary'):
+            fig = px.histogram(filtered_df, x='date', title='Monetary')
+            st.plotly_chart(fig)
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
