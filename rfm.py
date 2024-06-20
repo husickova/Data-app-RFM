@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from datetime import datetime
 
 # Titulek aplikace s barevným textem
 st.markdown("""
@@ -26,7 +27,7 @@ def assign_category(repeat_count):
         return '08. Can\'t Lose'
     elif 13 <= repeat_count <= 14:
         return '09. At Risk'
-    elif 12 <= repeat_count <= 5:
+    elif 12 <= repeat_count <= 11:
         return '10. Hibernating'
     else:
         return '11. Lost'
@@ -46,6 +47,44 @@ try:
         # Vytvoření interaktivních polí pro výběr datumu
         start_date = st.date_input('Start date', df['date'].min().date())
         end_date = st.date_input('End date', df['date'].max().date())
+        
+        # Tlačítka pro výběr měsíce
+        if st.button('Leden'):
+            start_date = datetime(start_date.year, 1, 1)
+            end_date = datetime(start_date.year, 1, 31)
+        if st.button('Únor'):
+            start_date = datetime(start_date.year, 2, 1)
+            end_date = datetime(start_date.year, 2, 28) if start_date.year % 4 != 0 else datetime(start_date.year, 2, 29)
+        if st.button('Březen'):
+            start_date = datetime(start_date.year, 3, 1)
+            end_date = datetime(start_date.year, 3, 31)
+        if st.button('Duben'):
+            start_date = datetime(start_date.year, 4, 1)
+            end_date = datetime(start_date.year, 4, 30)
+        if st.button('Květen'):
+            start_date = datetime(start_date.year, 5, 1)
+            end_date = datetime(start_date.year, 5, 31)
+        if st.button('Červen'):
+            start_date = datetime(start_date.year, 6, 1)
+            end_date = datetime(start_date.year, 6, 30)
+        if st.button('Červenec'):
+            start_date = datetime(start_date.year, 7, 1)
+            end_date = datetime(start_date.year, 7, 31)
+        if st.button('Srpen'):
+            start_date = datetime(start_date.year, 8, 1)
+            end_date = datetime(start_date.year, 8, 31)
+        if st.button('Září'):
+            start_date = datetime(start_date.year, 9, 1)
+            end_date = datetime(start_date.year, 9, 30)
+        if st.button('Říjen'):
+            start_date = datetime(start_date.year, 10, 1)
+            end_date = datetime(start_date.year, 10, 31)
+        if st.button('Listopad'):
+            start_date = datetime(start_date.year, 11, 1)
+            end_date = datetime(start_date.year, 11, 30)
+        if st.button('Prosinec'):
+            start_date = datetime(start_date.year, 12, 1)
+            end_date = datetime(start_date.year, 12, 31)
         
         # Filtrování dat podle vybraných dat
         filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
