@@ -34,7 +34,7 @@ def assign_category(rfm_score):
         return '11. Lost'
 
 # Načtení CSV souboru
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -60,14 +60,10 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalizace RFM hodnot s dynamickým počtem popisků
-    recency_bins = pd.qcut(rfm_df['Recency'], q=5, duplicates='drop').cat.categories.size
-    frequency_bins = pd.qcut(rfm_df['Frequency'], q=5, duplicates='drop').cat.categories.size
-    monetary_bins = pd.qcut(rfm_df['Monetary'], q=5, duplicates='drop').cat.categories.size
-    
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=recency_bins, labels=[str(i) for i in range(recency_bins, 0, -1)])
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=frequency_bins, labels=[str(i) for i in range(1, frequency_bins + 1)])
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=monetary_bins, labels=[str(i) for i in range(1, monetary_bins + 1)])
+    # Normalizace RFM hodnot pomocí pd.cut
+    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=5, labels=['5', '4', '3', '2', '1'])
+    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=5, labels=['1', '2', '3', '4', '5'])
+    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=5, labels=['1', '2', '3', '4', '5'])
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
