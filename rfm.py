@@ -69,7 +69,7 @@ try:
             st.plotly_chart(fig)
             
         if st.button('Frequency'):
-            fig = px.histogram(filtered_df, x='date', title='Recency')
+            fig = px.histogram(filtered_df, x='date', title='Frequency')
             st.plotly_chart(fig)
 
         if st.button('Monetary'):
