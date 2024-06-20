@@ -5,7 +5,7 @@ import pandas as pd
 st.title("RFM for Keboola by Bytegarden")
 
 # Načtení CSV souboru
-csv_path = "husickova/Data-app-RFM/rfm-data.csv"
+csv_path = "rfm-data.csv"  # relativní cesta, pokud je skript ve stejné složce
 try:
     df = pd.read_csv(csv_path)
     # Zobrazení tabulky
