@@ -1,35 +1,39 @@
 import streamlit as st
 import pandas as pd
-import re
+import matplotlib.pyplot as plt
 
 # Titulek aplikace s barevným textem
 st.markdown("""
 # RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
 """, unsafe_allow_html=True)
 
-# Funkce pro přiřazení kategorií na základě num_of_events
-def assign_category(num_of_events):
-    patterns = {
-        r'5[4-5]': '01. Champions',
-        r'[3-4][4-5]': '02. Loyal Customers',
-        r'[4-5][2-3]': '03. Potential Loyalists',
-        r'51': '04. Recent Customers',
-        r'41': '05. Promising',
-        r'33': '06. Need Attention',
-        r'3[1-2]': '07. About to Sleep',
-        r'[1-2][5]': '08. Can\'t Lose',
-        r'[1-2][3-4]': '09. At Risk',
-        r'2[1-2]': '10. Hibernating',
-        r'1[1-2]': '11. Lost',
-    }
-    
-    for pattern, category in patterns.items():
-        if re.match(pattern, str(num_of_events)):
-            return category
-    return 'Uncategorized'
+# Funkce pro přiřazení kategorií na základě počtu opakování ID
+def assign_category(repeat_count):
+    if repeat_count >= 54:
+        return '01. Champions'
+    elif 34 <= repeat_count <= 53:
+        return '02. Loyal Customers'
+    elif 24 <= repeat_count <= 33:
+        return '03. Potential Loyalists'
+    elif repeat_count == 21:
+        return '04. Recent Customers'
+    elif repeat_count == 14:
+        return '05. Promising'
+    elif repeat_count == 13:
+        return '06. Need Attention'
+    elif 11 <= repeat_count <= 12:
+        return '07. About to Sleep'
+    elif repeat_count == 25:
+        return '08. Can\'t Lose'
+    elif 13 <= repeat_count <= 14:
+        return '09. At Risk'
+    elif 12 <= repeat_count <= 11:
+        return '10. Hibernating'
+    else:
+        return '11. Lost'
 
 # Načtení CSV souboru
-csv_path = "rfm-data.csv"  # relativní cesta, pokud je skript ve stejné složce
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -47,14 +51,26 @@ try:
         # Filtrování dat podle vybraných dat
         filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
         
-        # Přiřazení kategorií
-        if 'num_of_events' in filtered_df.columns:
-            filtered_df['Category'] = filtered_df['num_of_events'].apply(assign_category)
-        else:
-            st.error("DataFrame neobsahuje sloupec 'num_of_events'.")
+        # Počet opakování ID
+        id_counts = filtered_df['id'].value_counts().reset_index()
+        id_counts.columns = ['id', 'count']
         
-        # Zobrazení filtrované a kategorizované tabulky
-        st.dataframe(filtered_df)
+        # Přiřazení kategorií
+        id_counts['Category'] = id_counts['count'].apply(assign_category)
+        
+        # Spočítání řádků v jednotlivých kategoriích
+        category_counts = id_counts['Category'].value_counts().sort_index()
+
+        # Vytvoření grafu
+        plt.figure(figsize=(10, 6))
+        category_counts.plot(kind='bar')
+        plt.title('Počet řádků v jednotlivých kategoriích')
+        plt.xlabel('Kategorie')
+        plt.ylabel('Počet řádků')
+        plt.xticks(rotation=45)
+        
+        # Zobrazení grafu ve Streamlit
+        st.pyplot(plt)
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
