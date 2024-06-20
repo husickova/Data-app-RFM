@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Titulek aplikace s barevným textem
 st.markdown("""
@@ -61,16 +60,8 @@ try:
         # Spočítání řádků v jednotlivých kategoriích
         category_counts = id_counts['Category'].value_counts().sort_index()
 
-        # Vytvoření grafu
-        plt.figure(figsize=(10, 6))
-        category_counts.plot(kind='bar')
-        plt.title('Počet řádků v jednotlivých kategoriích')
-        plt.xlabel('Kategorie')
-        plt.ylabel('Počet řádků')
-        plt.xticks(rotation=45)
-        
-        # Zobrazení grafu ve Streamlit
-        st.pyplot(plt)
+        # Vytvoření grafu pomocí Streamlit
+        st.bar_chart(category_counts)
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
