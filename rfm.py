@@ -63,11 +63,27 @@ try:
         category_counts = id_counts['Category'].value_counts().sort_index().reset_index()
         category_counts.columns = ['Category', 'Count']
 
-        # Vytvoření grafu pomocí Plotly
+        # Vytvoření hlavního grafu pomocí Plotly
         fig = px.bar(category_counts, x='Category', y='Count', title='How many customers are in each category', labels={'Count': 'Count', 'Category': 'Category'})
         
-        # Zobrazení grafu ve Streamlit
+        # Zobrazení hlavního grafu ve Streamlit
         st.plotly_chart(fig)
+        
+        # Tři pole pro další grafy s fialovým podbarvením
+        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
+        st.markdown('## Recency')
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.plotly_chart(px.histogram(filtered_df, x='date', title='Recency'))
+
+        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
+        st.markdown('## Frequency')
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.plotly_chart(px.histogram(filtered_df, x='id', title='Frequency'))
+
+        st.markdown('<div style="background-color: purple; padding: 10px;">', unsafe_allow_html=True)
+        st.markdown('## Monetary')
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.plotly_chart(px.histogram(filtered_df, x='count', title='Monetary'))
         
 except FileNotFoundError:
     st.error(f"Soubor na cestě {csv_path} nebyl nalezen.")
