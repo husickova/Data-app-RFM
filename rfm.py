@@ -8,27 +8,27 @@ st.markdown("""
 # RFM for <span style="color:dodgerblue">Keboola</span> by <span style="color:purple">Bytegarden</span>
 """, unsafe_allow_html=True)
 
-# Funkce pro přiřazení kategorií na základě počtu opakování ID
-def assign_category(repeat_count):
-    if repeat_count >= 54:
+# Funkce pro přiřazení kategorií na základě RFM skóre
+def assign_category(rfm_score):
+    if rfm_score >= 555:
         return '01. Champions'
-    elif 34 <= repeat_count <= 53:
+    elif rfm_score >= 455:
         return '02. Loyal Customers'
-    elif 24 <= repeat_count <= 33:
+    elif rfm_score >= 355:
         return '03. Potential Loyalists'
-    elif 15 <= repeat_count <= 23:
+    elif rfm_score >= 255:
         return '04. Recent Customers'
-    elif 10 <= repeat_count <= 15:
+    elif rfm_score >= 155:
         return '05. Promising'
-    elif 7 <= repeat_count <= 10:
+    elif rfm_score >= 115:
         return '06. Need Attention'
-    elif 5 <= repeat_count <= 6:
+    elif rfm_score >= 105:
         return '07. About to Sleep'
-    elif repeat_count == 4:
+    elif rfm_score >= 75:
         return '08. Can\'t Lose'
-    elif 3 <= repeat_count <= 4:
+    elif rfm_score >= 55:
         return '09. At Risk'
-    elif 2 <= repeat_count <= 1:
+    elif rfm_score >= 15:
         return '10. Hibernating'
     else:
         return '11. Lost'
@@ -61,14 +61,15 @@ try:
     }).reset_index()
     
     # Normalizace RFM hodnot
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], 5, ['5', '4', '3', '2', '1'])
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], 5, ['1', '2', '3', '4', '5'])
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], 5, ['1', '2', '3', '4', '5'])
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], 5, ['5', '4', '3', '2', '1'], duplicates='drop')
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], 5, ['1', '2', '3', '4', '5'], duplicates='drop')
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], 5, ['1', '2', '3', '4', '5'], duplicates='drop')
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
-    
+    rfm_df['RFM_Score'] = rfm_df['RFM_Score'].astype(int)
+
     # Kategorie na základě RFM skóre
-    rfm_df['Category'] = rfm_df['RFM_Score'].apply(lambda x: assign_category(int(x[0] + x[1])))
+    rfm_df['Category'] = rfm_df['RFM_Score'].apply(assign_category)
 
     # Spočítání řádků v jednotlivých kategoriích
     category_counts = rfm_df['Category'].value_counts().sort_index().reset_index()
