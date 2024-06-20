@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 
-# Titulek aplikace
-st.title("RFM for Keboola by Bytegarden")
+# Titulek aplikace s barevným textem
+st.markdown("""
+# RFM for <span style="color:turquoise">Keboola</span> by <span style="color:purple">Bytegarden</span>
+""", unsafe_allow_html=True)
 
 # Načtení CSV souboru
 csv_path = "rfm-data.csv"  # relativní cesta, pokud je skript ve stejné složce
