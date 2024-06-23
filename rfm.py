@@ -89,21 +89,10 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # Create a multiselect for category selection with an "All" option
-    all_categories = ['All'] + category_order
-    selected_categories = st.sidebar.multiselect('Select categories to display:', all_categories, default=['All'])
-
-    # Filter data based on the selected categories
-    if 'All' in selected_categories:
-        filtered_category_df = rfm_df
-    else:
-        filtered_category_df = rfm_df[rfm_df['Category'].isin(selected_categories)]
-
     # CSS for styling buttons
     st.markdown("""
     <style>
     .stButton > button {
-        background-color: lightgray;
         margin-right: 5px;
         margin-bottom: 5px;
     }
@@ -134,7 +123,8 @@ try:
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
         ("3D Scatter Plot", "3D Scatter Plot"),
         ("Pareto Chart", "Pareto Chart"),
-        ("About categories", "About categories")
+        ("About categories", "About categories"),
+        ("Heatmap R & F", "Heatmap R & F")
     ]
 
     selected_button = None
@@ -144,6 +134,9 @@ try:
             selected_button = button_value
 
     # Display the graph based on the selected button
+    if selected_button is None:
+        selected_button = 'About categories'
+
     if selected_button == 'Recency':
         fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order})
         fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order})
@@ -169,6 +162,10 @@ try:
         fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig)
 
+    if selected_button == 'Scatter Frequency vs Monetary':
+        fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order})
+        st.plotly_chart(fig)
+
     if selected_button == 'Scatter Recency vs Monetary':
         fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig)
@@ -176,7 +173,7 @@ try:
     if selected_button == '3D Scatter Plot':
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                             color='Category', 
-                            title='3D Scatter Plot of Recency, Frequency, and Monetary',
+                                                        title='3D Scatter Plot of Recency, Frequency, and Monetary',
                             height=800, category_orders={'Category': category_order})  # Increase height for better visualization
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
@@ -192,15 +189,26 @@ try:
         st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
 
     if selected_button == 'About categories':
+        # Customizing the display for "About categories"
+        fig = px.treemap(
+            rfm_df, 
+            path=['Category'], 
+            values='Monetary', 
+            color='Category', 
+            color_discrete_sequence=px.colors.qualitative.Pastel, 
+            title='Customer Distribution by RFM Categories'
+        )
+        st.plotly_chart(fig)
         category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
         category_counts.columns = ['Category', 'Count']
-        fig = px.bar(category_counts, x='Category', y='Count', title='Category Distribution', color_discrete_sequence=['dodgerblue'])
-        st.plotly_chart(fig)
         st.write(category_counts)
+
+    if selected_button == 'Heatmap R & F':
+        heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
+        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
+        st.plotly_chart(fig)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
-
-
