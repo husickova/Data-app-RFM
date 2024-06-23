@@ -88,15 +88,11 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # Create a selectbox for category selection
-    category_options = ['All'] + category_order
-    selected_category = st.sidebar.selectbox('Select a category to display:', category_options)
+    # Create a multiselect for category selection
+    selected_categories = st.sidebar.multiselect('Select categories to display:', category_order, default=category_order)
     
-    # Filter data based on the selected category
-    if selected_category != 'All':
-        filtered_category_df = rfm_df[rfm_df['Category'] == selected_category]
-    else:
-        filtered_category_df = rfm_df
+    # Filter data based on the selected categories
+    filtered_category_df = rfm_df[rfm_df['Category'].isin(selected_categories)]
 
     # Create columns for buttons
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -181,7 +177,7 @@ try:
         st.plotly_chart(fig)
 
     if selected_button == 'Pareto Chart':
-        filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
+                filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
         filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
         filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
         
