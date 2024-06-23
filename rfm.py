@@ -129,8 +129,11 @@ try:
 
     selected_button = None
 
-    for button_text, button_value in buttons:
-        if st.button(button_text, key=button_value):
+    # Create columns for buttons to be displayed in a row
+    cols = st.columns(len(buttons))
+
+    for col, (button_text, button_value) in zip(cols, buttons):
+        if col.button(button_text, key=button_value):
             selected_button = button_value
 
     # Display the graph based on the selected button
@@ -141,43 +144,43 @@ try:
     filtered_category_df = rfm_df
 
     if selected_button == 'Recency':
-        fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order})
-        fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order})
+        fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Frequency':
-        fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order})
-        fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order})
+        fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Monetary':
-        fig1 = px.histogram(filtered_category_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order})
-        fig2 = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order})
+        fig1 = px.histogram(filtered_category_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig2 = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Scatter Recency vs Frequency':
-        fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order})
+        fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
     if selected_button == 'Scatter Frequency vs Monetary':
-        fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order})
+        fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
-    if selected_button == 'Scatter Recency vs Monetary':
-        fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order})
+        if selected_button == 'Scatter Recency vs Monetary':
+        fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
     if selected_button == '3D Scatter Plot':
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                             color='Category', 
                             title='3D Scatter Plot of Recency, Frequency, and Monetary',
-                            height=800, category_orders={'Category': category_order})  # Increase height for better visualization
+                            height=800, category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)  # Increase height for better visualization
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
 
@@ -200,7 +203,7 @@ try:
             x=aggregated_df['Category'], 
             y=aggregated_df['Monetary'], 
             name='Monetary',
-            marker_color='dodgerblue'
+            marker_color=px.colors.qualitative.Pastel[:11]
         ))
 
         # Line chart for Percentage of Total Revenue
@@ -237,7 +240,6 @@ try:
 
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
-
 
     if selected_button == 'About categories':
         # Customizing the display for "About categories"
