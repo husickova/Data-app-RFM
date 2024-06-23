@@ -101,7 +101,7 @@ try:
 
     # Create columns for buttons
     col1, col2, col3, col4, col5 = st.columns(5)
-    col6, col7, col8, col9, col10, col11 = st.columns(6)
+    col6, col7, col8, col9, col10 = st.columns(5)
 
     selected_button = None
 
@@ -172,10 +172,11 @@ try:
         st.plotly_chart(fig)
 
     if selected_button == '3D Scatter Plot':
-        fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary', 
+        fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
+                            color='Category', 
                             title='3D Scatter Plot of Recency, Frequency, and Monetary',
-                            color_discrete_sequence=['dodgerblue'])
-        fig.update_traces(marker=dict(size=3))
+                            height=800)  # Increase height for better visualization
+        fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
 
     if selected_button == 'Pareto Chart':
