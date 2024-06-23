@@ -131,7 +131,8 @@ try:
             selected_button = 'Pareto Chart'
     with col11:
         if st.button('About categories'):
-            category_counts = rfm_df['Category'].value_counts().sort_index()
+            category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
+            category_counts.columns = ['Category', 'Count']
             st.write(category_counts)
 
     # Display the graph based on the selected button
