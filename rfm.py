@@ -183,14 +183,15 @@ try:
 
     if selected_button == 'Pareto Chart':
         filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
-        filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
-        filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
         
         # Aggregating data into 11 categories for readability
         aggregated_df = filtered_category_df_sorted.groupby('Category').agg({
-            'Monetary': 'sum',
-            'Cumulative Percentage': 'max'
+            'Monetary': 'sum'
         }).reset_index()
+
+        # Calculate the percentage of total revenue for each category
+        total_revenue = aggregated_df['Monetary'].sum()
+        aggregated_df['Percentage of Total Revenue'] = 100 * aggregated_df['Monetary'] / total_revenue
 
         fig = go.Figure()
 
@@ -202,11 +203,11 @@ try:
             marker_color='dodgerblue'
         ))
 
-        # Line chart for Cumulative Percentage
+        # Line chart for Percentage of Total Revenue
         fig.add_trace(go.Scatter(
             x=aggregated_df['Category'], 
-            y=aggregated_df['Cumulative Percentage'], 
-            name='Cumulative Percentage', 
+            y=aggregated_df['Percentage of Total Revenue'], 
+            name='Percentage of Total Revenue', 
             yaxis='y2',
             mode='lines+markers',
             marker=dict(color='red', size=8, symbol='circle')
@@ -221,7 +222,7 @@ try:
                 side='left'
             ),
             yaxis2=dict(
-                title='Cumulative Percentage',
+                title='Percentage of Total Revenue',
                 side='right',
                 overlaying='y',
                 range=[0, 110]  # Extend the range a bit beyond 100%
@@ -235,7 +236,8 @@ try:
         )
 
         st.plotly_chart(fig)
-        st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
+
 
     if selected_button == 'About categories':
         # Customizing the display for "About categories"
