@@ -181,14 +181,12 @@ try:
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
 
-    if selected_button == 'Pareto Chart':
+     if selected_button == 'Pareto Chart':
         filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
         filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
         filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
-
-        # Aggregating data into categories for readability
-        filtered_category_df_sorted['Category'] = pd.cut(filtered_category_df_sorted.index, bins=20, labels=False)
-
+        
+        # Aggregating data into 11 categories for readability
         aggregated_df = filtered_category_df_sorted.groupby('Category').agg({
             'Monetary': 'sum',
             'Cumulative Percentage': 'max'
@@ -198,7 +196,7 @@ try:
 
         # Bar chart for Monetary
         fig.add_trace(go.Bar(
-            x=aggregated_df.index, 
+            x=aggregated_df['Category'], 
             y=aggregated_df['Monetary'], 
             name='Monetary',
             marker_color='dodgerblue'
@@ -206,7 +204,7 @@ try:
 
         # Line chart for Cumulative Percentage
         fig.add_trace(go.Scatter(
-            x=aggregated_df.index, 
+            x=aggregated_df['Category'], 
             y=aggregated_df['Cumulative Percentage'], 
             name='Cumulative Percentage', 
             yaxis='y2',
