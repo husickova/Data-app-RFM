@@ -181,7 +181,7 @@ try:
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
 
-     if selected_button == 'Pareto Chart':
+    if selected_button == 'Pareto Chart':
         filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
         filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
         filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
