@@ -181,14 +181,14 @@ try:
         st.plotly_chart(fig)
 
     if selected_button == 'Pareto Chart':
-        filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
-        filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
-        filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
+            filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
+            filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
+            filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
         
-        fig = px.bar(filtered_category_df_sorted, x='id', y='Monetary', title='Pareto Chart', color_discrete_sequence=['dodgerblue'])
-        fig.add_scatter(x=filtered_category_df_sorted['id'], y=filtered_category_df_sorted['Cumulative Percentage'], mode='lines+markers', name='Cumulative Percentage', marker=dict(color='red'))
-        st.plotly_chart(fig)
-        st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
+            fig = px.bar(filtered_category_df_sorted, x='id', y='Monetary', title='Pareto Chart', color_discrete_sequence=['dodgerblue'])
+            fig.add_scatter(x=filtered_category_df_sorted['id'], y=filtered_category_df_sorted['Cumulative Percentage'], mode='lines+markers', name='Cumulative Percentage', marker=dict(color='red'))
+            st.plotly_chart(fig)
+            st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
