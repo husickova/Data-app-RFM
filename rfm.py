@@ -129,6 +129,10 @@ try:
     with col10:
         if st.button('Pareto Chart'):
             selected_button = 'Pareto Chart'
+    with col11:
+    if st.button('About categories'):
+        category_counts = rfm_df['Category'].value_counts().sort_index()
+        st.write(category_counts)
 
     # Display the graph based on the selected button
     if selected_button == 'Histogram Frequency':
