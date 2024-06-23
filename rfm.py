@@ -88,11 +88,15 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # Create a multiselect for category selection
-    selected_categories = st.sidebar.multiselect('Select categories to display:', category_order, default=category_order)
-    
+    # Create a multiselect for category selection with an "All" option
+    all_categories = ['All'] + category_order
+    selected_categories = st.sidebar.multiselect('Select categories to display:', all_categories, default=['All'])
+
     # Filter data based on the selected categories
-    filtered_category_df = rfm_df[rfm_df['Category'].isin(selected_categories)]
+    if 'All' in selected_categories:
+        filtered_category_df = rfm_df
+    else:
+        filtered_category_df = rfm_df[rfm_df['Category'].isin(selected_categories)]
 
     # Create columns for buttons
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -173,18 +177,18 @@ try:
         st.plotly_chart(fig)
 
     if selected_button == 'Boxplot Monetary':
-        fig = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color_discrete_sequence=['dodgerblue'])
+                fig = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
 
     if selected_button == 'Pareto Chart':
-                filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
-                filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
-                filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
+        filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
+        filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
+        filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
         
-                fig = px.bar(filtered_category_df_sorted, x='id', y='Monetary', title='Pareto Chart', color_discrete_sequence=['dodgerblue'])
-                fig.add_scatter(x=filtered_category_df_sorted['id'], y=filtered_category_df_sorted['Cumulative Percentage'], mode='lines+markers', name='Cumulative Percentage', marker=dict(color='red'))
-                st.plotly_chart(fig)
-                st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
+        fig = px.bar(filtered_category_df_sorted, x='id', y='Monetary', title='Pareto Chart', color_discrete_sequence=['dodgerblue'])
+        fig.add_scatter(x=filtered_category_df_sorted['id'], y=filtered_category_df_sorted['Cumulative Percentage'], mode='lines+markers', name='Cumulative Percentage', marker=dict(color='red'))
+        st.plotly_chart(fig)
+        st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
