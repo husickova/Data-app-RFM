@@ -115,6 +115,7 @@ try:
 
     # Create buttons
     buttons = [
+        ("Segmentation", "About categories"),
         ("Recency", "Recency"),
         ("Frequency", "Frequency"),
         ("Monetary", "Monetary"),
@@ -123,7 +124,6 @@ try:
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
         ("3D Scatter Plot", "3D Scatter Plot"),
         ("Pareto Chart", "Pareto Chart"),
-        ("About categories", "About categories"),
         ("Heatmap R & F", "Heatmap R & F")
     ]
 
@@ -136,6 +136,9 @@ try:
     # Display the graph based on the selected button
     if selected_button is None:
         selected_button = 'About categories'
+
+    # Filter data based on the selected categories
+    filtered_category_df = rfm_df
 
     if selected_button == 'Recency':
         fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order})
@@ -173,7 +176,7 @@ try:
     if selected_button == '3D Scatter Plot':
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                             color='Category', 
-                                                        title='3D Scatter Plot of Recency, Frequency, and Monetary',
+                            title='3D Scatter Plot of Recency, Frequency, and Monetary',
                             height=800, category_orders={'Category': category_order})  # Increase height for better visualization
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
@@ -199,9 +202,6 @@ try:
             title='Customer Distribution by RFM Categories'
         )
         st.plotly_chart(fig)
-        category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
-        category_counts.columns = ['Category', 'Count']
-        st.write(category_counts)
 
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
@@ -212,3 +212,4 @@ except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
+
