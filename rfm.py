@@ -64,10 +64,10 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalize RFM values using pd.qcut to create quantiles
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False) + 1
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False) + 1
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False) + 1
+    # Normalize RFM values using percentiles to create quantiles
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False, duplicates='drop') + 1
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False, duplicates='drop') + 1
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False, duplicates='drop') + 1
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
