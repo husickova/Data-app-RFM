@@ -64,10 +64,10 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalize RFM values using pd.cut
-    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=5, labels=['5', '4', '3', '2', '1'])
-    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=5, labels=['1', '2', '3', '4', '5'])
-    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=5, labels=['1', '2', '3', '4', '5'])
+    # Normalize RFM values using pd.qcut to create quantiles
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=['5', '4', '3', '2', '1'])
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=['1', '2', '3', '4', '5'])
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=['1', '2', '3', '4', '5'])
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
@@ -184,3 +184,4 @@ except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
+
