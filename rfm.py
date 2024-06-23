@@ -89,52 +89,58 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # CSS for styling buttons
-    st.markdown("""
-    <style>
-    .stButton > button {
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    .custom-button {
-        background-color: lightgray;
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    .stMarkdown > div > div > div > div > div:first-child > div {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .stMarkdown > div > div > div > div > div:first-child > div > div {
-        flex-grow: 0;
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+# CSS for styling buttons
+st.markdown("""
+<style>
+.stButton > button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.custom-button {
+    background-color: lightgray;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+.stMarkdown > div > div > div > div > div:first-child > div {
+    display: flex;
+    flex-wrap: wrap;
+}
+.stMarkdown > div > div > div > div > div:first-child > div > div {
+    flex-grow: 0;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+</style>
+""", unsafe_allow_html=True)
 
-    # Create buttons
-    buttons = [
-        ("Segmentation", "About categories"),
-        ("Recency", "Recency"),
-        ("Frequency", "Frequency"),
-        ("Monetary", "Monetary"),
-        ("Scatter Recency vs Frequency", "Scatter Recency vs Frequency"),
-        ("Scatter Frequency vs Monetary", "Scatter Frequency vs Monetary"),
-        ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
-        ("3D Scatter Plot", "3D Scatter Plot"),
-        ("Pareto Chart", "Pareto Chart"),
-        ("Heatmap R & F", "Heatmap R & F")
-    ]
+# Create buttons
+buttons = [
+    ("Segmentation", "About categories"),
+    ("Recency", "Recency"),
+    ("Frequency", "Frequency"),
+    ("Monetary", "Monetary"),
+    ("Scatter Recency vs Frequency", "Scatter Recency vs Frequency"),
+    ("Scatter Frequency vs Monetary", "Scatter Frequency vs Monetary"),
+    ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
+    ("3D Scatter Plot", "3D Scatter Plot"),
+    ("Pareto Chart", "Pareto Chart"),
+    ("Heatmap R & F", "Heatmap R & F")
+]
 
-    selected_button = None
+selected_button = None
 
-    # Create columns for buttons to be displayed in a row
-    cols = st.columns(len(buttons))
+# Create columns for buttons to be displayed in rows
+row1 = st.columns(4)
+row2 = st.columns(4)
+row3 = st.columns(2)
 
-    for col, (button_text, button_value) in zip(cols, buttons):
+rows = [row1, row2, row3]
+
+for row, button_group in zip(rows, [buttons[:4], buttons[4:8], buttons[8:]]):
+    for col, (button_text, button_value) in zip(row, button_group):
         if col.button(button_text, key=button_value):
             selected_button = button_value
+
 
     # Display the graph based on the selected button
     if selected_button is None:
