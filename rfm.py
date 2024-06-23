@@ -65,9 +65,9 @@ try:
     }).reset_index()
     
     # Normalize RFM values using pd.qcut to create quantiles
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=['5', '4', '3', '2', '1'])
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=['1', '2', '3', '4', '5'])
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=['1', '2', '3', '4', '5'])
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=['5', '4', '3', '2', '1'], duplicates='drop')
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=['1', '2', '3', '4', '5'], duplicates='drop')
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=['1', '2', '3', '4', '5'], duplicates='drop')
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
 
