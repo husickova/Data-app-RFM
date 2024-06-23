@@ -177,7 +177,7 @@ try:
         st.plotly_chart(fig)
 
     if selected_button == 'Boxplot Monetary':
-                fig = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color_discrete_sequence=['dodgerblue'])
+        fig = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
 
     if selected_button == 'Pareto Chart':
