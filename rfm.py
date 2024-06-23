@@ -65,11 +65,16 @@ try:
     }).reset_index()
     
     # Normalize RFM values using pd.qcut to create quantiles
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'].rank(method='first'), q=5, labels=['5', '4', '3', '2', '1'])
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'].rank(method='first'), q=5, labels=['1', '2', '3', '4', '5'])
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'].rank(method='first'), q=5, labels=['1', '2', '3', '4', '5'])
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False) + 1
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False) + 1
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False) + 1
+
+    # Convert ranks to str for concatenation
+    rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
+    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
     
-    rfm_df['RFM_Score'] = rfm_df['R_rank'].astype(str) + rfm_df['F_rank'].astype(str) + rfm_df['M_rank'].astype(str)
+    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank'] + rfm_df['M_rank']
 
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
