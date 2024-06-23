@@ -99,83 +99,85 @@ try:
     else:
         filtered_category_df = rfm_df[rfm_df['Category'].isin(selected_categories)]
 
-    # Create columns for buttons
-    col1, col2, col3, col4, col5 = st.columns(5)
-    col6, col7, col8, col9, col10 = st.columns(5)
+    # CSS for styling buttons
+    st.markdown("""
+    <style>
+    .stButton > button {
+        background-color: lightgray;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .custom-button {
+        background-color: lightgray;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .stMarkdown > div > div > div > div > div:first-child > div {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .stMarkdown > div > div > div > div > div:first-child > div > div {
+        flex-grow: 0;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Create buttons
+    buttons = [
+        ("Recency", "Recency"),
+        ("Frequency", "Frequency"),
+        ("Monetary", "Monetary"),
+        ("Scatter Recency vs Frequency", "Scatter Recency vs Frequency"),
+        ("Scatter Frequency vs Monetary", "Scatter Frequency vs Monetary"),
+        ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
+        ("3D Scatter Plot", "3D Scatter Plot"),
+        ("Pareto Chart", "Pareto Chart"),
+        ("About categories", "About categories")
+    ]
 
     selected_button = None
 
-    with col1:
-        if st.button('Recency'):
-            selected_button = 'Recency'
-    with col2:
-        if st.button('Frequency'):
-            selected_button = 'Frequency'
-    with col3:
-        if st.button('Monetary'):
-            selected_button = 'Monetary'
-    with col4:
-        if st.button('Scatter Recency vs Frequency'):
-            selected_button = 'Scatter Recency vs Frequency'
-    with col5:
-        if st.button('Scatter Frequency vs Monetary'):
-            selected_button = 'Scatter Frequency vs Monetary'
-    with col6:
-        if st.button('Scatter Recency vs Monetary'):
-            selected_button = 'Scatter Recency vs Monetary'
-    with col7:
-        if st.button('3D Scatter Plot'):
-            selected_button = '3D Scatter Plot'
-    with col8:
-        if st.button('Pareto Chart'):
-            selected_button = 'Pareto Chart'
-    with col9:
-        if st.button('About categories'):
-            category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
-            category_counts.columns = ['Category', 'Count']
-            fig = px.bar(category_counts, x='Category', y='Count', title='Category Distribution', color_discrete_sequence=['dodgerblue'])
-            st.plotly_chart(fig)
-            st.write(category_counts)
+    for button_text, button_value in buttons:
+        if st.button(button_text, key=button_value):
+            selected_button = button_value
 
     # Display the graph based on the selected button
     if selected_button == 'Recency':
-        fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color_discrete_sequence=['dodgerblue'])
-        fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color_discrete_sequence=['dodgerblue'])
+        fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order})
+        fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Frequency':
-        fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color_discrete_sequence=['dodgerblue'])
-        fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color_discrete_sequence=['dodgerblue'])
+        fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order})
+        fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Monetary':
-        fig1 = px.histogram(filtered_category_df, x='Monetary', title='Histogram Monetary', color_discrete_sequence=['dodgerblue'])
-        fig2 = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color_discrete_sequence=['dodgerblue'])
+        fig1 = px.histogram(filtered_category_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order})
+        fig2 = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Scatter Recency vs Frequency':
-        fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color_discrete_sequence=['dodgerblue'])
-        st.plotly_chart(fig)
-
-    if selected_button == 'Scatter Frequency vs Monetary':
-        fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color_discrete_sequence=['dodgerblue'])
+        fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig)
 
     if selected_button == 'Scatter Recency vs Monetary':
-        fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color_discrete_sequence=['dodgerblue'])
+        fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order})
         st.plotly_chart(fig)
 
     if selected_button == '3D Scatter Plot':
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                             color='Category', 
                             title='3D Scatter Plot of Recency, Frequency, and Monetary',
-                            height=800)  # Increase height for better visualization
+                            height=800, category_orders={'Category': category_order})  # Increase height for better visualization
         fig.update_traces(marker=dict(size=5))  # Adjust marker size
         st.plotly_chart(fig)
 
@@ -189,8 +191,16 @@ try:
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
 
+    if selected_button == 'About categories':
+        category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
+        category_counts.columns = ['Category', 'Count']
+        fig = px.bar(category_counts, x='Category', y='Count', title='Category Distribution', color_discrete_sequence=['dodgerblue'])
+        st.plotly_chart(fig)
+        st.write(category_counts)
+
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
+
 
