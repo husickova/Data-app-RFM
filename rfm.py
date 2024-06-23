@@ -171,7 +171,7 @@ try:
         fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
 
-        if selected_button == '3D Scatter Plot':
+    if selected_button == '3D Scatter Plot':
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary', 
                             title='3D Scatter Plot of Recency, Frequency, and Monetary',
                             color_discrete_sequence=['dodgerblue'])
