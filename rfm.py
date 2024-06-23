@@ -172,7 +172,7 @@ try:
         fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
-        if selected_button == 'Scatter Recency vs Monetary':
+    if selected_button == 'Scatter Recency vs Monetary':
         fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
