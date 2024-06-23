@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime, timedelta
 import plotly.express as px
+import plotly.graph_objects as go
 import re
 
 # Application title with colored text
@@ -100,7 +101,7 @@ try:
 
     # Create columns for buttons
     col1, col2, col3, col4, col5 = st.columns(5)
-    col6, col7, col8, col9, col10 = st.columns(5)
+    col6, col7, col8, col9, col10, col11 = st.columns(6)
 
     selected_button = None
 
@@ -123,9 +124,12 @@ try:
         if st.button('Scatter Recency vs Monetary'):
             selected_button = 'Scatter Recency vs Monetary'
     with col7:
+        if st.button('3D Scatter Plot'):
+            selected_button = '3D Scatter Plot'
+    with col8:
         if st.button('Pareto Chart'):
             selected_button = 'Pareto Chart'
-    with col8:
+    with col9:
         if st.button('About categories'):
             category_counts = rfm_df['Category'].value_counts().reindex(category_order, fill_value=0).reset_index()
             category_counts.columns = ['Category', 'Count']
@@ -167,6 +171,13 @@ try:
         fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color_discrete_sequence=['dodgerblue'])
         st.plotly_chart(fig)
 
+        if selected_button == '3D Scatter Plot':
+        fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary', 
+                            title='3D Scatter Plot of Recency, Frequency, and Monetary',
+                            color_discrete_sequence=['dodgerblue'])
+        fig.update_traces(marker=dict(size=3))
+        st.plotly_chart(fig)
+
     if selected_button == 'Pareto Chart':
         filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
         filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
@@ -181,3 +192,4 @@ except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
+
