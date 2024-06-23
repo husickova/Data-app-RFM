@@ -186,8 +186,48 @@ try:
         filtered_category_df_sorted['Cumulative Sum'] = filtered_category_df_sorted['Monetary'].cumsum()
         filtered_category_df_sorted['Cumulative Percentage'] = 100 * filtered_category_df_sorted['Cumulative Sum'] / filtered_category_df_sorted['Monetary'].sum()
         
-        fig = px.bar(filtered_category_df_sorted, x='id', y='Monetary', title='Pareto Chart', color_discrete_sequence=['dodgerblue'])
-        fig.add_scatter(x=filtered_category_df_sorted['id'], y=filtered_category_df_sorted['Cumulative Percentage'], mode='lines+markers', name='Cumulative Percentage', marker=dict(color='red', size=8, symbol='circle'))
+        fig = go.Figure()
+        
+        # Bar chart for Monetary
+        fig.add_trace(go.Bar(
+            x=filtered_category_df_sorted['id'], 
+            y=filtered_category_df_sorted['Monetary'], 
+            name='Monetary',
+            marker_color='dodgerblue'
+        ))
+        
+        # Line chart for Cumulative Percentage
+        fig.add_trace(go.Scatter(
+            x=filtered_category_df_sorted['id'], 
+            y=filtered_category_df_sorted['Cumulative Percentage'], 
+            name='Cumulative Percentage', 
+            yaxis='y2',
+            mode='lines+markers',
+            marker=dict(color='red', size=8, symbol='circle')
+        ))
+        
+        # Create a secondary y-axis
+        fig.update_layout(
+            title='Pareto Chart',
+            xaxis_title='id',
+            yaxis=dict(
+                title='Monetary',
+                side='left'
+            ),
+            yaxis2=dict(
+                title='Cumulative Percentage',
+                side='right',
+                overlaying='y',
+                range=[0, 110]  # Extend the range a bit beyond 100%
+            ),
+            legend=dict(
+                x=0.1,
+                y=1.1,
+                bgcolor='rgba(255,255,255,0)',
+                bordercolor='rgba(255,255,255,0)'
+            )
+        )
+        
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the cumulative contribution of each customer to the total revenue.</p>", unsafe_allow_html=True)
 
