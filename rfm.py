@@ -52,25 +52,24 @@ try:
     
     # Collapsible section for RFM parameters
     with st.sidebar.expander("RFM Parameters"):
-        st.markdown("### RFM Parameters")
-        recency_params = (
+        recency_params = [
             int(st.sidebar.text_input('R1', 66)),
             int(st.sidebar.text_input('R2', 25)),
             int(st.sidebar.text_input('R3', 10)),
             int(st.sidebar.text_input('R4', 3))
-        )
-        frequency_params = (
+        ]
+        frequency_params = [
             float(st.sidebar.text_input('F1', 66.6)),
             float(st.sidebar.text_input('F2', 38.8)),
             float(st.sidebar.text_input('F3', 24.5)),
             float(st.sidebar.text_input('F4', 13.6))
-        )
-        monetary_params = (
+        ]
+        monetary_params = [
             float(st.sidebar.text_input('M1', 672)),
             float(st.sidebar.text_input('M2', 1573)),
             float(st.sidebar.text_input('M3', 3079)),
             float(st.sidebar.text_input('M4', 6841))
-        )
+        ]
     
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
@@ -90,14 +89,20 @@ try:
     # Calculate Average Order Size (AOS) and Monetary
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
-    # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[3] else 4 if x <= recency_params[2] else 3 if x <= recency_params[1] else 2 if x <= recency_params[0] else 1)
+    # Assign R score using pd.cut
+    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'],
+                              bins=[-1] + recency_params[::-1] + [float('inf')],
+                              labels=[5, 4, 3, 2, 1])
     
-    # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x >= frequency_params[2] else 3 if x >= frequency_params[1] else 2 if x >= frequency_params[0] else 1)
+    # Assign F score using pd.cut
+    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'],
+                              bins=[-1] + frequency_params[::-1] + [float('inf')],
+                              labels=[1, 2, 3, 4, 5])
     
-    # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x >= monetary_params[2] else 3 if x >= monetary_params[1] else 2 if x >= monetary_params[0] else 1)
+    # Assign M score using pd.cut
+    rfm_df['M_rank'] = pd.cut(rfm_df['AOS'],
+                              bins=[-1] + monetary_params[::-1] + [float('inf')],
+                              labels=[1, 2, 3, 4, 5])
     
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
@@ -117,7 +122,6 @@ try:
         '10. Hibernating', '11. Lost'
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
-
 
     # CSS for styling buttons
     st.markdown("""
