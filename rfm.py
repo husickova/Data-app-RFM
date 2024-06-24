@@ -276,8 +276,16 @@ try:
     if selected_button == 'AOS':
         # Calculate Average Order Size (AOS)
         rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
-        fig = px.box(rfm_df, x='Category', y='AOS', title='Boxplot of Average Order Size by Category', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig)
+    
+        # Aggregate AOS by Category
+        aos_df = rfm_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
+    
+        # Create a bar plot for AOS by Category
+        fig = px.bar(aos_df, x='Category', y='AOS', title='Average Order Size by Category', 
+                     color='Category', category_orders={'Category': category_order}, 
+                     color_discrete_sequence=px.colors.qualitative.Pastel)
+    
+    st.plotly_chart(fig)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
