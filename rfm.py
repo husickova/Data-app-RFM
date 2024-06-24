@@ -49,38 +49,9 @@ try:
     # Create interactive date selection fields in the sidebar
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
-
+    
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
-    
-    # Add text inputs for R, F, M quantile boundaries in the sidebar
-    st.sidebar.markdown("### Adjust RFM Quantile Boundaries")
-    r_quantiles = [
-        int(st.sidebar.text_input('R5', value="3")),
-        int(st.sidebar.text_input('R4', value="10")),
-        int(st.sidebar.text_input('R3', value="25")),
-        int(st.sidebar.text_input('R2', value="66")),
-        int(st.sidebar.text_input('R1', value="100"))
-    ]
-    f_quantiles = [
-        float(st.sidebar.text_input('F5', value="13.6")),
-        float(st.sidebar.text_input('F4', value="24.5")),
-        float(st.sidebar.text_input('F3', value="38.8")),
-        float(st.sidebar.text_input('F2', value="66.6")),
-        float(st.sidebar.text_input('F1', value="100"))
-    ]
-    m_quantiles = [
-        int(st.sidebar.text_input('M5', value="6841")),
-        int(st.sidebar.text_input('M4', value="3079")),
-        int(st.sidebar.text_input('M3', value="1573")),
-        int(st.sidebar.text_input('M2', value="672")),
-        int(st.sidebar.text_input('M1', value="1"))
-    ]
-    
-    # Sort quantiles to ensure they are monotonically increasing
-    r_quantiles = sorted(r_quantiles)
-    f_quantiles = sorted(f_quantiles)
-    m_quantiles = sorted(m_quantiles)
     
     # Calculate RFM values
     max_date = filtered_df['date'].max() + timedelta(days=1)
@@ -94,35 +65,20 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Print debug information
-    st.write("RFM Dataframe Head:")
-    st.write(rfm_df.head())
-
-    # Assign quantile ranks based on custom boundaries
-    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[-1] + r_quantiles, labels=False, include_lowest=True) + 1
-    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[-1] + f_quantiles, labels=False, include_lowest=True) + 1
-    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[-1] + m_quantiles, labels=False, include_lowest=True) + 1
-
-    # Replace None values with 5 (highest rank for recency)
-    rfm_df['R_rank'] = rfm_df['R_rank'].fillna(5).astype(int)
-
-    # Print debug information
-    st.write("Quantile Ranks:")
-    st.write(rfm_df[['R_rank', 'F_rank', 'M_rank']].head())
+    # Normalize RFM values using percentiles to create quantiles
+    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False, duplicates='drop') + 1
+    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False, duplicates='drop') + 1
+    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False, duplicates='drop') + 1
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
-    rfm_df['F_rank'] = rfm_df['F_rank'].astype(int).astype(str)
-    rfm_df['M_rank'] = rfm_df['M_rank'].astype(int).astype(str)
+    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank'] + rfm_df['M_rank']
 
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
-
-    # Print debug information
-    st.write("Assigned Categories:")
-    st.write(rfm_df[['RFM_Score', 'Category']].head())
 
     # Sort categories by numeric order
     category_order = [
@@ -133,11 +89,29 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # Remove any rows with NaN values in 'Category' or 'id' to avoid treemap errors
-    rfm_df.dropna(subset=['Category', 'id'], inplace=True)
-
-    # Initialize selected_button
-    selected_button = 'About categories'
+    # CSS for styling buttons
+    st.markdown("""
+    <style>
+    .stButton > button {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .custom-button {
+        background-color: lightgray;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .stMarkdown > div > div > div > div > div:first-child > div {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .stMarkdown > div > div > div > div > div:first-child > div > div {
+        flex-grow: 0;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # Create buttons
     buttons = [
@@ -150,14 +124,15 @@ try:
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
         ("3D Scatter Plot", "3D Scatter Plot"),
         ("Pareto Chart", "Pareto Chart"),
-        ("Heatmap R & F", "Heatmap R & F"),
-        ("Average Order Size (AOS)", "AOS")
+        ("Heatmap R & F", "Heatmap R & F")
     ]
+
+    selected_button = None
 
     # Create columns for buttons to be displayed in rows
     row1 = st.columns(4)
     row2 = st.columns(4)
-    row3 = st.columns(3)
+    row3 = st.columns(2)
 
     rows = [row1, row2, row3]
 
@@ -193,19 +168,6 @@ try:
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
-
-    if selected_button == 'AOS':
-        # Calculate and plot Average Order Size (AOS)
-        filtered_category_df['AOS'] = filtered_category_df['Monetary'] / filtered_category_df['Frequency']
-        aos_df = filtered_category_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
-
-        st.write("AOS Data:")
-        st.write(aos_df)
-
-        fig3 = px.bar(aos_df, x='Category', y='AOS', title='Average Order Size (AOS) by Category', color='Category', 
-                      category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig3)
-        st.markdown("<p style='font-size: small;'>Average Order Size (AOS) shows the average amount spent per order in each category.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Scatter Recency vs Frequency':
         fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
@@ -284,32 +246,22 @@ try:
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
 
-    if selected_button == 'Heatmap R & F':
-        heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
-        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
-        st.plotly_chart(fig)
-
     if selected_button == 'About categories':
         # Customizing the display for "About categories"
         fig = px.treemap(
             rfm_df, 
-            path=['Category', 'id'], 
+            path=['Category'], 
             values='Monetary', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories'
         )
         st.plotly_chart(fig)
-        
-        # Display debug information
-        st.write("RFM Dataframe Head:")
-        st.write(rfm_df.head())
 
-        st.write("Quantile Ranks:")
-        st.write(rfm_df[['R_rank', 'F_rank', 'M_rank']].head())
-
-        st.write("Assigned Categories:")
-        st.write(rfm_df[['RFM_Score', 'Category']].head())
+    if selected_button == 'Heatmap R & F':
+        heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
+        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
+        st.plotly_chart(fig)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
