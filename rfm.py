@@ -285,7 +285,7 @@ try:
                      color='Category', category_orders={'Category': category_order}, 
                      color_discrete_sequence=px.colors.qualitative.Pastel)
     
-    st.plotly_chart(fig)
+        st.plotly_chart(fig)
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
