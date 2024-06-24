@@ -93,7 +93,7 @@ try:
     rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[3] else 4 if x <= recency_params[2] else 3 if x <= recency_params[1] else 2 if x <= recency_params[0] else 1)
     
     # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x <= frequency_params[3] else 4 if x <= frequency_params[2] else 3 if x <= frequency_params[1] else 2 if x <= frequency_params[0] else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x >= frequency_params[2] else 3 if x >= frequency_params[1] else 2 if x >= frequency_params[0] else 1)
     
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x >= monetary_params[2] else 3 if x >= monetary_params[1] else 2 if x >= monetary_params[0] else 1)
@@ -298,7 +298,10 @@ try:
         # Display the table with the number of customers in each category
         st.markdown("### Number of Customers in Each Category")
         st.dataframe(category_counts)
-
+        
+        # Display the head of the dataframe with R_score, F_score, and Category
+        st.markdown("### Sample Data with R_score, F_score, and Category")
+        st.dataframe(rfm_df[['R_rank', 'F_rank', 'Category']].head())
 
     if selected_button == 'Heatmap R & F':
         # Calculate average order size (AOS) for each R and F combination
