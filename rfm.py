@@ -270,10 +270,17 @@ try:
         # Calculate percentage of total monetary value for each category
         category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
         category_percentage = category_percentage.round(2).astype(str) + '%'
-
         fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
-
         st.plotly_chart(fig)
+        
+        # Calculate the number of customers in each category
+        category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
+        category_counts.columns = ['Category', 'Number of Customers']
+
+        # Display the table with the number of customers in each category
+        st.markdown("### Number of Customers in Each Category")
+        st.dataframe(category_counts)
+
 
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
