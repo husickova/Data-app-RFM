@@ -52,9 +52,24 @@ try:
     
     # Add inputs for RFM parameters
     st.sidebar.markdown("### RFM Parameters")
-    recency_params = st.sidebar.slider('Recency thresholds', 0, 100, (3, 10, 25, 66), 1)
-    frequency_params = st.sidebar.slider('Frequency thresholds', 0.0, 100.0, (13.6, 7.2, 3.8, 1.6), 0.1)
-    monetary_params = st.sidebar.slider('Monetary thresholds', 0.0, 10000.0, (6841, 3079, 1573, 672), 1.0)
+    recency_params = (
+        st.sidebar.slider('Recency threshold 1', 0, 100, 3),
+        st.sidebar.slider('Recency threshold 2', 0, 100, 10),
+        st.sidebar.slider('Recency threshold 3', 0, 100, 25),
+        st.sidebar.slider('Recency threshold 4', 0, 100, 66)
+    )
+    frequency_params = (
+        st.sidebar.slider('Frequency threshold 1', 0.0, 100.0, 13.6),
+        st.sidebar.slider('Frequency threshold 2', 0.0, 100.0, 24.5),
+        st.sidebar.slider('Frequency threshold 3', 0.0, 100.0, 38.8),
+        st.sidebar.slider('Frequency threshold 4', 0.0, 100.0, 66.6)
+    )
+    monetary_params = (
+        st.sidebar.slider('Monetary threshold 1', 0.0, 10000.0, 6841),
+        st.sidebar.slider('Monetary threshold 2', 0.0, 10000.0, 3079),
+        st.sidebar.slider('Monetary threshold 3', 0.0, 10000.0, 1573),
+        st.sidebar.slider('Monetary threshold 4', 0.0, 10000.0, 672)
+    )
     
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
