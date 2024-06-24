@@ -82,7 +82,7 @@ try:
     rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
     rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
     
-    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank'] + rfm_df['M_rank']
+    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
 
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
