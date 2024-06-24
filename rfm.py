@@ -96,7 +96,7 @@ try:
     rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x >= frequency_params[2] else 3 if x >= frequency_params[1] else 2 if x >= frequency_params[0] else 1)
     
     # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x >= monetary_params[2] else 3 if x >= monetary_params[1] else 2 if x >= monetary_params[0] else 1)
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x <= monetary_params[2] else 3 if x <= monetary_params[1] else 2 if x <= monetary_params[0] else 1)
     
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
