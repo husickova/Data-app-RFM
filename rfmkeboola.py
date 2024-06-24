@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -192,6 +192,15 @@ try:
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
+
+        # Calculate and plot Average Order Size (AOS)
+        filtered_category_df['AOS'] = filtered_category_df['Monetary'] / filtered_category_df['Frequency']
+        aos_df = filtered_category_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
+
+        fig3 = px.bar(aos_df, x='Category', y='AOS', title='Average Order Size (AOS) by Category', color='Category', 
+                      category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        st.plotly_chart(fig3)
+        st.markdown("<p style='font-size: small;'>Average Order Size (AOS) shows the average amount spent per order in each category.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Scatter Recency vs Frequency':
         fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
