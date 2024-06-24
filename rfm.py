@@ -54,22 +54,22 @@ try:
     with st.sidebar.expander("RFM Parameters"):
         st.markdown("### RFM Parameters")
         recency_params = (
-            int(st.sidebar.text_input('R2', 140)),
-            int(st.sidebar.text_input('R3', 25)),
-            int(st.sidebar.text_input('R4', 10)),
-            int(st.sidebar.text_input('R5', 3))
+            int(st.sidebar.text_input('R1', 66)),
+            int(st.sidebar.text_input('R2', 25)),
+            int(st.sidebar.text_input('R3', 10)),
+            int(st.sidebar.text_input('R4', 3))
         )
         frequency_params = (
-            float(st.sidebar.text_input('F2', 13.6)),
-            float(st.sidebar.text_input('F3', 7.2)),
-            float(st.sidebar.text_input('F4', 3.8)),
-            float(st.sidebar.text_input('F5', 1.6))
+            float(st.sidebar.text_input('F1', 66.6)),
+            float(st.sidebar.text_input('F2', 38.8)),
+            float(st.sidebar.text_input('F3', 24.5)),
+            float(st.sidebar.text_input('F4', 13.6))
         )
         monetary_params = (
-            float(st.sidebar.text_input('M2', 6841)),
+            float(st.sidebar.text_input('M1', 672)),
+            float(st.sidebar.text_input('M2', 1573)),
             float(st.sidebar.text_input('M3', 3079)),
-            float(st.sidebar.text_input('M4', 1573)),
-            float(st.sidebar.text_input('M5', 672))
+            float(st.sidebar.text_input('M4', 6841))
         )
     
     # Filter data based on selected dates
