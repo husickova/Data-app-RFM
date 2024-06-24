@@ -283,9 +283,18 @@ try:
 
 
     if selected_button == 'Heatmap R & F':
-        heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
-        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency (Mean Monetary Value)', color_continuous_scale='Blues')
+        # Calculate average order size (AOS) for each R and F combination
+        heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='AOS', aggfunc='mean').fillna(0)
+    
+        # Create the heatmap
+        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency (Average Order Size)', 
+                        color_continuous_scale='Blues', labels={'color':'Average Order Size'})
+    
+        # Update layout to match the provided example
+        fig.update_layout(xaxis_title='Frequency', yaxis_title='Recency')
+    
         st.plotly_chart(fig)
+
 
     if selected_button == 'AOS':
         rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
