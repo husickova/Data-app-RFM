@@ -91,7 +91,7 @@ try:
     
     # Assign R score using pd.cut
     rfm_df['R_rank'] = pd.cut(rfm_df['Recency'],
-                              bins=[-1] + recency_params + [float('inf')],
+                              bins=[-1] + recency_params + [int('inf')],
                               labels=[5, 4, 3, 2, 1])
     
     # Assign F score using pd.cut
