@@ -257,17 +257,17 @@ try:
             values='Monetary', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories',
-            category_orders={'Category': category_order}
+            title='Customer Distribution by RFM Categories'
         )
 
-     # Calculate percentage of total monetary value for each category
+        # Calculate percentage of total monetary value for each category
         category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
         category_percentage = category_percentage.round(2).astype(str) + '%'
 
         fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
 
-        st.plotly_chart(fig)
+       st.plotly_chart(fig)
+
 
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
