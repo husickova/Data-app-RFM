@@ -52,24 +52,24 @@ try:
     
     # Collapsible section for RFM parameters
     with st.sidebar.expander("RFM Parameters"):
-        recency_params = [
+        recency_params = sorted([
             int(st.sidebar.text_input('R1', 66)),
             int(st.sidebar.text_input('R2', 25)),
             int(st.sidebar.text_input('R3', 10)),
             int(st.sidebar.text_input('R4', 3))
-        ]
-        frequency_params = [
+        ])
+        frequency_params = sorted([
             float(st.sidebar.text_input('F1', 66.6)),
             float(st.sidebar.text_input('F2', 38.8)),
             float(st.sidebar.text_input('F3', 24.5)),
             float(st.sidebar.text_input('F4', 13.6))
-        ]
-        monetary_params = [
+        ])
+        monetary_params = sorted([
             float(st.sidebar.text_input('M1', 672)),
             float(st.sidebar.text_input('M2', 1573)),
             float(st.sidebar.text_input('M3', 3079)),
             float(st.sidebar.text_input('M4', 6841))
-        ]
+        ])
     
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
@@ -91,17 +91,17 @@ try:
     
     # Assign R score using pd.cut
     rfm_df['R_rank'] = pd.cut(rfm_df['Recency'],
-                              bins=[-1] + recency_params[::-1] + [float('inf')],
+                              bins=[-1] + recency_params + [float('inf')],
                               labels=[5, 4, 3, 2, 1])
     
     # Assign F score using pd.cut
     rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'],
-                              bins=[-1] + frequency_params[::-1] + [float('inf')],
+                              bins=[-1] + frequency_params + [float('inf')],
                               labels=[1, 2, 3, 4, 5])
     
     # Assign M score using pd.cut
     rfm_df['M_rank'] = pd.cut(rfm_df['AOS'],
-                              bins=[-1] + monetary_params[::-1] + [float('inf')],
+                              bins=[-1] + monetary_params + [float('inf')],
                               labels=[1, 2, 3, 4, 5])
     
     # Convert ranks to str for concatenation
