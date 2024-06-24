@@ -91,18 +91,18 @@ try:
     
     # Assign R score using pd.cut
     rfm_df['R_rank'] = pd.cut(rfm_df['Recency'],
-                              bins=[-1] + recency_params + [int('inf')],
+                              bins=[-1] + recency_params + [float('inf')],
                               labels=[5, 4, 3, 2, 1])
     
     # Assign F score using pd.cut
     rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'],
                               bins=[-1] + frequency_params + [float('inf')],
-                              labels=[1, 2, 3, 4, 5])
+                              labels=[5, 4, 3, 2, 1])
     
     # Assign M score using pd.cut
     rfm_df['M_rank'] = pd.cut(rfm_df['AOS'],
                               bins=[-1] + monetary_params + [float('inf')],
-                              labels=[1, 2, 3, 4, 5])
+                              labels=[5, 4, 3, 2, 1])
     
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
