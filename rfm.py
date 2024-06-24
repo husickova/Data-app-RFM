@@ -51,71 +51,72 @@ try:
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
     
     # Add inputs for RFM parameters
-    st.sidebar.markdown("### RFM Parameters")
-    recency_params = (
-        int(st.sidebar.text_input('Recency threshold 1', 3)),
-        int(st.sidebar.text_input('Recency threshold 2', 10)),
-        int(st.sidebar.text_input('Recency threshold 3', 25)),
-        int(st.sidebar.text_input('Recency threshold 4', 66))
-    )
-    frequency_params = (
-        float(st.sidebar.text_input('Frequency threshold 1', 13.6)),
-        float(st.sidebar.text_input('Frequency threshold 2', 24.5)),
-        float(st.sidebar.text_input('Frequency threshold 3', 38.8)),
-        float(st.sidebar.text_input('Frequency threshold 4', 66.6))
-    )
-    monetary_params = (
-        float(st.sidebar.text_input('Monetary threshold 1', 6841)),
-        float(st.sidebar.text_input('Monetary threshold 2', 3079)),
-        float(st.sidebar.text_input('Monetary threshold 3', 1573)),
-        float(st.sidebar.text_input('Monetary threshold 4', 672))
-    )
-    
-    # Filter data based on selected dates
-    filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
-    
-    # Calculate RFM values
-    max_date = filtered_df['date'].max() + timedelta(days=1)
-    rfm_df = filtered_df.groupby('id').agg({
-        'date': lambda x: (max_date - x.max()).days,
-        'id': 'count',
-        'value': 'sum'
-    }).rename(columns={
-        'date': 'Recency',
-        'id': 'Frequency',
-        'value': 'Monetary'
-    }).reset_index()
-    
-    # Calculate Average Order Size (AOS)
-    rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
-    
-    # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[0] else 4 if x <= recency_params[1] else 3 if x <= recency_params[2] else 2 if x <= recency_params[3] else 1)
-    
-    # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x <= frequency_params[0] else 4 if x <= frequency_params[1] else 3 if x <= frequency_params[2] else 2 if x <= frequency_params[3] else 1)
-    
-    # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[0] else 4 if x >= monetary_params[1] else 3 if x >= monetary_params[2] else 2 if x >= monetary_params[3] else 1)
+st.sidebar.markdown("### RFM Parameters")
+recency_params = (
+    int(st.sidebar.text_input('R1', 66)),
+    int(st.sidebar.text_input('R2', 25)),
+    int(st.sidebar.text_input('R3', 10)),
+    int(st.sidebar.text_input('R4', 3))
+)
+frequency_params = (
+    float(st.sidebar.text_input('F1', 66.6)),
+    float(st.sidebar.text_input('F2', 38.8)),
+    float(st.sidebar.text_input('F3', 24.5)),
+    float(st.sidebar.text_input('F4', 13.6))
+)
+monetary_params = (
+    float(st.sidebar.text_input('M1', 672)),
+    float(st.sidebar.text_input('M2', 1573)),
+    float(st.sidebar.text_input('M3', 3079)),
+    float(st.sidebar.text_input('M4', 6841))
+)
 
-    # Convert ranks to str for concatenation
-    rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
-    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
-    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
-    
-    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
+# Filter data based on selected dates
+filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
 
-    # Assign categories based on R and F scores using regex
-    rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+# Calculate RFM values
+max_date = filtered_df['date'].max() + timedelta(days=1)
+rfm_df = filtered_df.groupby('id').agg({
+    'date': lambda x: (max_date - x.max()).days,
+    'id': 'count',
+    'value': 'sum'
+}).rename(columns={
+    'date': 'Recency',
+    'id': 'Frequency',
+    'value': 'Monetary'
+}).reset_index()
 
-    # Sort categories by numeric order
-    category_order = [
-        '01. Champions', '02. Loyal Customers', '03. Potential Loyalists',
-        '04. Recent Customers', '05. Promising', '06. Need Attention',
-        '07. About to Sleep', '08. Can\'t Lose', '09. At Risk',
-        '10. Hibernating', '11. Lost'
-    ]
-    rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
+# Calculate Average Order Size (AOS)
+rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
+
+# Assign R score
+rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[3] else 4 if x <= recency_params[2] else 3 if x <= recency_params[1] else 2 if x <= recency_params[0] else 1)
+
+# Assign F score
+rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x >= frequency_params[2] else 3 if x >= frequency_params[1] else 2 if x >= frequency_params[0] else 1)
+
+# Assign M score based on AOS
+rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x >= monetary_params[2] else 3 if x >= monetary_params[1] else 2 if x >= monetary_params[0] else 1)
+
+# Convert ranks to str for concatenation
+rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
+rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
+
+rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
+
+# Assign categories based on R and F scores using regex
+rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+
+# Sort categories by numeric order
+category_order = [
+    '01. Champions', '02. Loyal Customers', '03. Potential Loyalists',
+    '04. Recent Customers', '05. Promising', '06. Need Attention',
+    '07. About to Sleep', '08. Can\'t Lose', '09. At Risk',
+    '10. Hibernating', '11. Lost'
+]
+rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
+
 
     # CSS for styling buttons
     st.markdown("""
