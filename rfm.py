@@ -4,39 +4,12 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import re
+from sklearn.tree import DecisionTreeClassifier
 
 # Application title with colored text
 st.markdown("""
 # RFM by <span style="color:dodgerblue">Keboola</span>
 """, unsafe_allow_html=True)
-
-# Function to assign categories based on R and F scores using regex
-def assign_category(r, f):
-    rfm_score = f"{r}{f}"
-    if re.match(r'5[4-5]', rfm_score):
-        return '01. Champions'
-    elif re.match(r'[3-4][4-5]', rfm_score):
-        return '02. Loyal Customers'
-    elif re.match(r'[4-5][2-3]', rfm_score):
-        return '03. Potential Loyalists'
-    elif re.match(r'51', rfm_score):
-        return '04. Recent Customers'
-    elif re.match(r'41', rfm_score):
-        return '05. Promising'
-    elif re.match(r'33', rfm_score):
-        return '06. Need Attention'
-    elif re.match(r'3[1-2]', rfm_score):
-        return '07. About to Sleep'
-    elif re.match(r'[1-2][5]', rfm_score):
-        return '08. Can\'t Lose'
-    elif re.match(r'[1-2][3-4]', rfm_score):
-        return '09. At Risk'
-    elif re.match(r'2[1-2]', rfm_score):
-        return '10. Hibernating'
-    elif re.match(r'1[1-2]', rfm_score):
-        return '11. Lost'
-    else:
-        return 'Uncategorized'
 
 # Load CSV file
 csv_path = "rfm-data.csv"
@@ -111,8 +84,31 @@ try:
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
     
-    # Assign categories based on R and F scores using regex
-    rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+    # Define categories and corresponding RFM ranges
+    category_dict = {
+        '01. Champions': ('5[4-5]',),
+        '02. Loyal Customers': ('[3-4][4-5]',),
+        '03. Potential Loyalists': ('[4-5][2-3]',),
+        '04. Recent Customers': ('51',),
+        '05. Promising': ('41',),
+        '06. Need Attention': ('33',),
+        '07. About to Sleep': ('3[1-2]',),
+        '08. Can\'t Lose': ('[1-2][5]',),
+        '09. At Risk': ('[1-2][3-4]',),
+        '10. Hibernating': ('2[1-2]',),
+        '11. Lost': ('1[1-2]',)
+    }
+    
+    # Prepare data for training
+    X = rfm_df[['R_rank', 'F_rank']]
+    y = rfm_df['RFM_Score'].apply(lambda x: [k for k, v in category_dict.items() if re.match('|'.join(v), x)][0])
+    
+    # Train DecisionTreeClassifier
+    clf = DecisionTreeClassifier()
+    clf.fit(X, y)
+    
+    # Predict categories
+    rfm_df['Category'] = clf.predict(X)
     
     # Sort categories by numeric order
     category_order = [
@@ -123,6 +119,12 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
+    # Display the resulting dataframe
+    st.dataframe(rfm_df)
+
+    # Create and display a bar chart for RFM categories
+    fig = px.bar(rfm_df['Category'].value_counts().sort_index(), title="RFM Categories Distribution")
+    st.plotly_chart(fig)
     # CSS for styling buttons
     st.markdown("""
     <style>
