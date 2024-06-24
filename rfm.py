@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -117,6 +117,17 @@ try:
         '10. Hibernating', '11. Lost'
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
+
+    # Customizing the display for "About categories"
+    fig = px.treemap(
+        rfm_df, 
+        path=['Category'], 
+        values='Monetary', 
+        color='Category', 
+        color_discrete_sequence=px.colors.qualitative.Pastel, 
+        title='Customer Distribution by RFM Categories'
+    )
+    st.plotly_chart(fig)
 
     # CSS for styling buttons
     st.markdown("""
