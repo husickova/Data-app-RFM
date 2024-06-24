@@ -266,7 +266,7 @@ try:
 
         fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
 
-       st.plotly_chart(fig)
+        st.plotly_chart(fig)
 
 
     if selected_button == 'Heatmap R & F':
