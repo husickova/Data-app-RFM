@@ -50,6 +50,29 @@ try:
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
     
+    # Collapsible section for RFM parameters
+    with st.sidebar.expander("RFM Parameters", expanded=False):
+        st.markdown("### Recency Parameters")
+        r5 = int(st.sidebar.text_input('R5', 3))
+        r4 = int(st.sidebar.text_input('R4', 10))
+        r3 = int(st.sidebar.text_input('R3', 25))
+        r2 = int(st.sidebar.text_input('R2', 66))
+        r1 = int(st.sidebar.text_input('R1', 140))
+
+        st.markdown("### Frequency Parameters")
+        f5 = float(st.sidebar.text_input('F5', 13.6))
+        f4 = float(st.sidebar.text_input('F4', 24.5))
+        f3 = float(st.sidebar.text_input('F3', 38.8))
+        f2 = float(st.sidebar.text_input('F2', 66.6))
+        f1 = float(st.sidebar.text_input('F1', 100))
+
+        st.markdown("### Monetary Parameters")
+        m5 = float(st.sidebar.text_input('M5', 6841))
+        m4 = float(st.sidebar.text_input('M4', 3079))
+        m3 = float(st.sidebar.text_input('M3', 1573))
+        m2 = float(st.sidebar.text_input('M2', 672))
+        m1 = float(st.sidebar.text_input('M1', 10000))
+    
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
@@ -69,13 +92,13 @@ try:
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
     # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
     
     # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= 13.6 else 4 if x >= 7.2 else 3 if x >= 3.8 else 2 if x >= 1.6 else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
     
     # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
