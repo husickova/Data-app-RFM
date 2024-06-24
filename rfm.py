@@ -4,6 +4,10 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import re
+import openai
+
+# Set OpenAI API key
+openai.api_key = 'sk-proj-takWUdfOrCJlXO1bSXqtT3BlbkFJH29h9iQJFBCTyIPq2PIB'
 
 # Application title with colored text
 st.markdown("""
@@ -50,29 +54,6 @@ try:
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
     
-    # Collapsible section for RFM parameters
-    with st.sidebar.expander("RFM Parameters", expanded=False):
-        st.markdown("### Recency Parameters")
-        r5 = int(st.sidebar.text_input('R5', 3))
-        r4 = int(st.sidebar.text_input('R4', 10))
-        r3 = int(st.sidebar.text_input('R3', 25))
-        r2 = int(st.sidebar.text_input('R2', 66))
-        r1 = int(st.sidebar.text_input('R1', 140))
-
-        st.markdown("### Frequency Parameters")
-        f5 = float(st.sidebar.text_input('F5', 13.6))
-        f4 = float(st.sidebar.text_input('F4', 24.5))
-        f3 = float(st.sidebar.text_input('F3', 38.8))
-        f2 = float(st.sidebar.text_input('F2', 66.6))
-        f1 = float(st.sidebar.text_input('F1', 100))
-
-        st.markdown("### Monetary Parameters")
-        m5 = float(st.sidebar.text_input('M5', 6841))
-        m4 = float(st.sidebar.text_input('M4', 3079))
-        m3 = float(st.sidebar.text_input('M3', 1573))
-        m2 = float(st.sidebar.text_input('M2', 672))
-        m1 = float(st.sidebar.text_input('M1', 0))
-    
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
@@ -92,13 +73,13 @@ try:
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
     # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
     
     # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= 13.6 else 4 if x >= 7.2 else 3 if x >= 3.8 else 2 if x >= 1.6 else 1)
     
     # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
@@ -171,23 +152,17 @@ try:
     filtered_category_df = rfm_df
 
     if selected_button == 'About Customers':
-        fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
-        fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
         # Filter out extreme values
         filtered_monetary_df = filtered_category_df[filtered_category_df['Monetary'] <= filtered_category_df['Monetary'].quantile(0.95)]
-        fig1 = px.histogram(filtered_monetary_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
@@ -225,110 +200,147 @@ try:
             st.plotly_chart(fig)
 
     if selected_button == 'RFM Tuning':
-        if selected_button == 'Scatter Recency vs Frequency':
-            fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-            st.plotly_chart(fig)
+        with st.sidebar.expander("RFM Parameters", expanded=False):
+            st.markdown("### Recency Parameters")
+            r5 = int(st.text_input('R5', 3))
+            r4 = int(st.text_input('R4', 10))
+            r3 = int(st.text_input('R3', 25))
+            r2 = int(st.text_input('R2', 66))
 
-        if selected_button == 'Scatter Frequency vs Monetary':
-            fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-            st.plotly_chart(fig)
+            st.markdown("### Frequency Parameters")
+            f5 = float(st.text_input('F5', 13.6))
+            f4 = float(st.text_input('F4', 24.5))
+            f3 = float(st.text_input('F3', 38.8))
+            f2 = float(st.text_input('F2', 66.6))
 
-        if selected_button == 'Scatter Recency vs Monetary':
-            fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-            st.plotly_chart(fig)
+            st.markdown("### Monetary Parameters")
+            m5 = float(st.text_input('M5', 6841))
+            m4 = float(st.text_input('M4', 3079))
+            m3 = float(st.text_input('M3', 1573))
+            m2 = float(st.text_input('M2', 672))
 
-        if selected_button == '3D Scatter Plot':
-            fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
-                                color='Category', 
-                                title='3D Scatter Plot of Recency, Frequency, and Monetary',
-                                height=800, category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)  # Increase height for better visualization
-            fig.update_traces(marker=dict(size=5))  # Adjust marker size
-            st.plotly_chart(fig)
+        if 'rfm_df' in locals():
+            if st.button('Update RFM Segmentation'):
+                # Recalculate ranks based on updated parameters
+                rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
+                rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
+                rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
+                
+                # Convert ranks to str for concatenation
+                rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
+                rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+                rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
+                
+                rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
+                
+                # Assign categories based on R and F scores using regex
+                rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+                
+                st.success('RFM segmentation updated!')
 
-        if selected_button == 'Pareto Chart':
-            filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
-            
-            # Aggregating data into 11 categories for readability
-            aggregated_df = filtered_category_df_sorted.groupby('Category').agg({
-                'Monetary': 'sum'
-            }).reset_index()
+        # Display the updated RFM dataframe
+        st.dataframe(rfm_df.head())
 
-            # Calculate the percentage of total revenue for each category
-            total_revenue = aggregated_df['Monetary'].sum()
-            aggregated_df['Percentage of Total Revenue'] = 100 * aggregated_df['Monetary'] / total_revenue
+        if 'selected_button' in locals() and selected_button == 'RFM Tuning':
+            if selected_button == 'Scatter Recency vs Frequency':
+                fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+                st.plotly_chart(fig)
 
-            fig = go.Figure()
+            if selected_button == 'Scatter Frequency vs Monetary':
+                fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+                st.plotly_chart(fig)
 
-            # Bar chart for Monetary
-            fig.add_trace(go.Bar(
-                x=aggregated_df['Category'], 
-                y=aggregated_df['Monetary'], 
-                name='Monetary',
-                marker_color=px.colors.qualitative.Pastel[:11]
-            ))
+            if selected_button == 'Scatter Recency vs Monetary':
+                fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+                st.plotly_chart(fig)
 
-            # Line chart for Percentage of Total Revenue
-            fig.add_trace(go.Scatter(
-                x=aggregated_df['Category'], 
-                y=aggregated_df['Percentage of Total Revenue'], 
-                name='Percentage of Total Revenue', 
-                yaxis='y2',
-                mode='lines+markers',
-                marker=dict(color='red', size=8, symbol='circle')
-            ))
+            if selected_button == '3D Scatter Plot':
+                fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
+                                    color='Category', 
+                                    title='3D Scatter Plot of Recency, Frequency, and Monetary',
+                                    height=800, category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)  # Increase height for better visualization
+                fig.update_traces(marker=dict(size=5))  # Adjust marker size
+                st.plotly_chart(fig)
 
-            # Create a secondary y-axis
-            fig.update_layout(
-                title='Pareto Chart',
-                xaxis_title='Category',
-                yaxis=dict(
-                    title='Monetary',
-                    side='left'
-                ),
-                yaxis2=dict(
-                    title='Percentage of Total Revenue',
-                    side='right',
-                    overlaying='y',
-                    range=[0, 110]  # Extend the range a bit beyond 100%
-                ),
-                legend=dict(
-                    x=0.1,
-                    y=1.1,
-                    bgcolor='rgba(255,255,255,0)',
-                    bordercolor='rgba(255,255,255,0)'
+            if selected_button == 'Pareto Chart':
+                filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
+                
+                # Aggregating data into 11 categories for readability
+                aggregated_df = filtered_category_df_sorted.groupby('Category').agg({
+                    'Monetary': 'sum'
+                }).reset_index()
+
+                # Calculate the percentage of total revenue for each category
+                total_revenue = aggregated_df['Monetary'].sum()
+                aggregated_df['Percentage of Total Revenue'] = 100 * aggregated_df['Monetary'] / total_revenue
+
+                fig = go.Figure()
+
+                # Bar chart for Monetary
+                fig.add_trace(go.Bar(
+                    x=aggregated_df['Category'], 
+                    y=aggregated_df['Monetary'], 
+                    name='Monetary',
+                    marker_color=px.colors.qualitative.Pastel[:11]
+                ))
+
+                # Line chart for Percentage of Total Revenue
+                fig.add_trace(go.Scatter(
+                    x=aggregated_df['Category'], 
+                    y=aggregated_df['Percentage of Total Revenue'], 
+                    name='Percentage of Total Revenue', 
+                    yaxis='y2',
+                    mode='lines+markers',
+                    marker=dict(color='red', size=8, symbol='circle')
+                ))
+
+                # Create a secondary y-axis
+                fig.update_layout(
+                    title='Pareto Chart',
+                    xaxis_title='Category',
+                    yaxis=dict(
+                        title='Monetary',
+                        side='left'
+                    ),
+                    yaxis2=dict(
+                        title='Percentage of Total Revenue',
+                        side='right',
+                        overlaying='y',
+                        range=[0, 110]  # Extend the range a bit beyond 100%
+                    ),
+                    legend=dict(
+                        x=0.1,
+                        y=1.1,
+                        bgcolor='rgba(255,255,255,0)',
+                        bordercolor='rgba(255,255,255,0)'
+                    )
                 )
-            )
 
-            st.plotly_chart(fig)
-            st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
+                st.plotly_chart(fig)
+                st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
 
-        if selected_button == 'Heatmap R & F':
-            # Calculate average order size (AOS) for each R and F combination
-            heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='AOS', aggfunc='mean').fillna(0)
-        
-            # Create the heatmap
-            fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency (Average Order Size)', 
-                            color_continuous_scale='Blues', labels={'color':'Average Order Size'})
-        
-            # Update layout to match the provided example
-            fig.update_layout(xaxis_title='Frequency', yaxis_title='Recency')
-        
-            st.plotly_chart(fig)
+            if selected_button == 'Heatmap R & F':
+                # Calculate average order size (AOS) for each R and F combination
+                heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='AOS', aggfunc='mean').fillna(0)
+            
+                # Create the heatmap
+                fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency (Average Order Size)', 
+                                color_continuous_scale='Blues', labels={'color':'Average Order Size'})
+            
+                # Update layout to match the provided example
+                fig.update_layout(xaxis_title='Frequency', yaxis_title='Recency')
+            
+                st.plotly_chart(fig)
 
     if selected_button == 'TO DO Analysis':
         st.markdown("### TO DO Analysis")
-        prompt = st.text_area("Enter your prompt for OpenAI API")
-        if st.button("Generate"):
-            import openai
-            openai.api_key = st.secrets["openai_api_key"]
-
-            response = openai.Completion.create(
-                model="text-davinci-003",
-                prompt=prompt,
-                max_tokens=100
-            )
-
-            st.write(response.choices[0].text.strip())
+        prompt = "Prohlédni si vše co je v 'About Customers' a 'About Segmentation' a napiš 5 kroků, co má majitel té firmy udělat, se kterými kategoriemi dává smysl pracovat a jak."
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            max_tokens=100
+        )
+        st.write(response.choices[0].text.strip())
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
