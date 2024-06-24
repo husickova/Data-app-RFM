@@ -124,7 +124,8 @@ try:
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
         ("3D Scatter Plot", "3D Scatter Plot"),
         ("Pareto Chart", "Pareto Chart"),
-        ("Heatmap R & F", "Heatmap R & F")
+        ("Heatmap R & F", "Heatmap R & F"),
+        ("AOS", "AOS")
     ]
 
     selected_button = None
@@ -132,7 +133,7 @@ try:
     # Create columns for buttons to be displayed in rows
     row1 = st.columns(4)
     row2 = st.columns(4)
-    row3 = st.columns(2)
+    row3 = st.columns(3)
 
     rows = [row1, row2, row3]
 
@@ -163,8 +164,10 @@ try:
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
     if selected_button == 'Monetary':
-        fig1 = px.histogram(filtered_category_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        fig2 = px.box(filtered_category_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        # Filter out extreme values
+        filtered_monetary_df = filtered_category_df[filtered_category_df['Monetary'] <= filtered_category_df['Monetary'].quantile(0.95)]
+        fig1 = px.histogram(filtered_monetary_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
+        fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
@@ -256,11 +259,24 @@ try:
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories'
         )
+
+        # Calculate percentage of total monetary value for each category
+        category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
+        category_percentage = category_percentage.round(2).astype(str) + '%'
+
+        fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
+
         st.plotly_chart(fig)
 
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
         fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
+        st.plotly_chart(fig)
+
+    if selected_button == 'AOS':
+        # Calculate Average Order Size (AOS)
+        rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
+        fig = px.box(rfm_df, x='Category', y='AOS', title='Boxplot of Average Order Size by Category', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
 
 except FileNotFoundError:
