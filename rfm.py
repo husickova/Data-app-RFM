@@ -65,10 +65,17 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalize RFM values using percentiles to create quantiles
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False, duplicates='drop') + 1
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False, duplicates='drop') + 1
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False, duplicates='drop') + 1
+    # Calculate Average Order Size (AOS)
+    rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
+    
+    # Assign R score
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
+    
+    # Assign F score
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= 13.6 else 4 if x >= 7.2 else 3 if x >= 3.8 else 2 if x >= 1.6 else 1)
+    
+    # Assign M score based on AOS
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
@@ -268,10 +275,9 @@ try:
 
         st.plotly_chart(fig)
 
-
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
-        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
+        fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency (Mean Monetary Value)', color_continuous_scale='Blues')
         st.plotly_chart(fig)
 
     if selected_button == 'AOS':
