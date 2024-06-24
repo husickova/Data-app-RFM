@@ -78,7 +78,7 @@ try:
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
 
     # Convert ranks to str for concatenation
-    rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
+    rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
     rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
     rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
     
