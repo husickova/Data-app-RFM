@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "/mnt/data/rfm-data.csv"
+csv_path = "in/tables/rfm_data.csv"
 try:
     df = pd.read_csv(csv_path)
     
