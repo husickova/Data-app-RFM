@@ -4,10 +4,6 @@ from datetime import datetime, timedelta
 import plotly.express as px
 import plotly.graph_objects as go
 import re
-import openai
-
-# Set OpenAI API key
-openai.api_key = 'sk-proj-takWUdfOrCJlXO1bSXqtT3BlbkFJH29h9iQJFBCTyIPq2PIB'
 
 # Application title with colored text
 st.markdown("""
@@ -332,15 +328,6 @@ try:
             
                 st.plotly_chart(fig)
 
-    if selected_button == 'TO DO Analysis':
-        st.markdown("### TO DO Analysis")
-        prompt = "Prohlédni si vše co je v 'About Customers' a 'About Segmentation' a napiš 5 kroků, co má majitel té firmy udělat, se kterými kategoriemi dává smysl pracovat a jak."
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=prompt,
-            max_tokens=100
-        )
-        st.write(response.choices[0].text.strip())
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
