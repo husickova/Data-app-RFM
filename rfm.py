@@ -257,10 +257,11 @@ try:
             values='Monetary', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories'
+            title='Customer Distribution by RFM Categories',
+            category_orders={'Category': category_order}
         )
 
-        # Calculate percentage of total monetary value for each category
+     # Calculate percentage of total monetary value for each category
         category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
         category_percentage = category_percentage.round(2).astype(str) + '%'
 
