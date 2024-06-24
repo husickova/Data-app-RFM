@@ -49,9 +49,33 @@ try:
     # Create interactive date selection fields in the sidebar
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
-    
+
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
+    
+    # Add sliders for R, F, M quantile boundaries in the sidebar
+    st.sidebar.markdown("### Adjust RFM Quantile Boundaries")
+    r_quantiles = [
+        st.sidebar.slider('R5', min_value=0, max_value=100, value=3),
+        st.sidebar.slider('R4', min_value=0, max_value=100, value=10),
+        st.sidebar.slider('R3', min_value=0, max_value=100, value=25),
+        st.sidebar.slider('R2', min_value=0, max_value=100, value=66),
+        st.sidebar.slider('R1', min_value=0, max_value=100, value=100)
+    ]
+    f_quantiles = [
+        st.sidebar.slider('F5', min_value=0, max_value=100, value=13.6),
+        st.sidebar.slider('F4', min_value=0, max_value=100, value=24.5),
+        st.sidebar.slider('F3', min_value=0, max_value=100, value=38.8),
+        st.sidebar.slider('F2', min_value=0, max_value=100, value=66.6),
+        st.sidebar.slider('F1', min_value=0, max_value=100, value=100)
+    ]
+    m_quantiles = [
+        st.sidebar.slider('M5', min_value=0, max_value=100, value=6841),
+        st.sidebar.slider('M4', min_value=0, max_value=100, value=3079),
+        st.sidebar.slider('M3', min_value=0, max_value=100, value=1573),
+        st.sidebar.slider('M2', min_value=0, max_value=100, value=672),
+        st.sidebar.slider('M1', min_value=0, max_value=100, value=1)
+    ]
     
     # Calculate RFM values
     max_date = filtered_df['date'].max() + timedelta(days=1)
@@ -65,10 +89,10 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Normalize RFM values using percentiles to create quantiles
-    rfm_df['R_rank'] = pd.qcut(rfm_df['Recency'], q=5, labels=False, duplicates='drop') + 1
-    rfm_df['F_rank'] = pd.qcut(rfm_df['Frequency'], q=5, labels=False, duplicates='drop') + 1
-    rfm_df['M_rank'] = pd.qcut(rfm_df['Monetary'], q=5, labels=False, duplicates='drop') + 1
+    # Assign quantile ranks based on custom boundaries
+    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[0] + r_quantiles[::-1], labels=False, include_lowest=True) + 1
+    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[0] + f_quantiles, labels=False, include_lowest=True) + 1
+    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[0] + m_quantiles, labels=False, include_lowest=True) + 1
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
@@ -267,4 +291,3 @@ except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
-
