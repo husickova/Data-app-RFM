@@ -256,23 +256,29 @@ try:
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
 
-    if selected_button == 'About categories':
+    # Define custom color sequence based on the provided image
+    custom_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
+                     '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#aec7e8']
+
+     if selected_button == 'About categories':
         # Customizing the display for "About categories"
         fig = px.treemap(
             rfm_df, 
             path=['Category'], 
             values='Monetary', 
             color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories'
+            color_discrete_sequence=custom_colors, 
+             title='Customer Distribution by RFM Categories'
         )
 
         # Calculate percentage of total monetary value for each category
         category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
         category_percentage = category_percentage.round(2).astype(str) + '%'
+
         fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
+
         st.plotly_chart(fig)
-        
+
         # Calculate the number of customers in each category
         category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
         category_counts.columns = ['Category', 'Number of Customers']
