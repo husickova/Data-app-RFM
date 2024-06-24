@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -56,26 +56,31 @@ try:
     # Add text inputs for R, F, M quantile boundaries in the sidebar
     st.sidebar.markdown("### Adjust RFM Quantile Boundaries")
     r_quantiles = [
-        int(st.sidebar.text_input('R5', value=3)),
-        int(st.sidebar.text_input('R4', value=10)),
-        int(st.sidebar.text_input('R3', value=25)),
-        int(st.sidebar.text_input('R2', value=66)),
-        int(st.sidebar.text_input('R1', value=100))
+        int(st.sidebar.text_input('R5', value="3")),
+        int(st.sidebar.text_input('R4', value="10")),
+        int(st.sidebar.text_input('R3', value="25")),
+        int(st.sidebar.text_input('R2', value="66")),
+        int(st.sidebar.text_input('R1', value="100"))
     ]
     f_quantiles = [
-        float(st.sidebar.text_input('F5', value=13.6)),
-        float(st.sidebar.text_input('F4', value=24.5)),
-        float(st.sidebar.text_input('F3', value=38.8)),
-        float(st.sidebar.text_input('F2', value=66.6)),
-        float(st.sidebar.text_input('F1', value=100))
+        float(st.sidebar.text_input('F5', value="13.6")),
+        float(st.sidebar.text_input('F4', value="24.5")),
+        float(st.sidebar.text_input('F3', value="38.8")),
+        float(st.sidebar.text_input('F2', value="66.6")),
+        float(st.sidebar.text_input('F1', value="100"))
     ]
     m_quantiles = [
-        int(st.sidebar.text_input('M5', value=6841)),
-        int(st.sidebar.text_input('M4', value=3079)),
-        int(st.sidebar.text_input('M3', value=1573)),
-        int(st.sidebar.text_input('M2', value=672)),
-        int(st.sidebar.text_input('M1', value=1))
+        int(st.sidebar.text_input('M5', value="6841")),
+        int(st.sidebar.text_input('M4', value="3079")),
+        int(st.sidebar.text_input('M3', value="1573")),
+        int(st.sidebar.text_input('M2', value="672")),
+        int(st.sidebar.text_input('M1', value="1"))
     ]
+    
+    # Sort quantiles to ensure they are monotonically increasing
+    r_quantiles = sorted(r_quantiles)
+    f_quantiles = sorted(f_quantiles)
+    m_quantiles = sorted(m_quantiles)
     
     # Calculate RFM values
     max_date = filtered_df['date'].max() + timedelta(days=1)
