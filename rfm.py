@@ -95,9 +95,9 @@ try:
     }).reset_index()
     
     # Assign quantile ranks based on custom boundaries
-    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[0] + sorted(r_quantiles), labels=False, include_lowest=True) + 1
-    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[0] + sorted(f_quantiles), labels=False, include_lowest=True) + 1
-    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[0] + sorted(m_quantiles), labels=False, include_lowest=True) + 1
+    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[-1] + sorted(r_quantiles), labels=False, include_lowest=True) + 1
+    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[-1] + sorted(f_quantiles), labels=False, include_lowest=True) + 1
+    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[-1] + sorted(m_quantiles), labels=False, include_lowest=True) + 1
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
