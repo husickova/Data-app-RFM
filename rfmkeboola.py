@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "in/tables/rfm_data.csv"
+csv_path = "rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -53,28 +53,28 @@ try:
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
-    # Add sliders for R, F, M quantile boundaries in the sidebar
+    # Add text inputs for R, F, M quantile boundaries in the sidebar
     st.sidebar.markdown("### Adjust RFM Quantile Boundaries")
     r_quantiles = [
-        st.sidebar.slider('R5', min_value=0, max_value=100, value=3),
-        st.sidebar.slider('R4', min_value=0, max_value=100, value=10),
-        st.sidebar.slider('R3', min_value=0, max_value=100, value=25),
-        st.sidebar.slider('R2', min_value=0, max_value=100, value=66),
-        st.sidebar.slider('R1', min_value=0, max_value=100, value=100)
+        int(st.sidebar.text_input('R5', value=3)),
+        int(st.sidebar.text_input('R4', value=10)),
+        int(st.sidebar.text_input('R3', value=25)),
+        int(st.sidebar.text_input('R2', value=66)),
+        int(st.sidebar.text_input('R1', value=100))
     ]
     f_quantiles = [
-        st.sidebar.slider('F5', min_value=0, max_value=100, value=13.6),
-        st.sidebar.slider('F4', min_value=0, max_value=100, value=24.5),
-        st.sidebar.slider('F3', min_value=0, max_value=100, value=38.8),
-        st.sidebar.slider('F2', min_value=0, max_value=100, value=66.6),
-        st.sidebar.slider('F1', min_value=0, max_value=100, value=100)
+        float(st.sidebar.text_input('F5', value=13.6)),
+        float(st.sidebar.text_input('F4', value=24.5)),
+        float(st.sidebar.text_input('F3', value=38.8)),
+        float(st.sidebar.text_input('F2', value=66.6)),
+        float(st.sidebar.text_input('F1', value=100))
     ]
     m_quantiles = [
-        st.sidebar.slider('M5', min_value=0, max_value=100, value=6841),
-        st.sidebar.slider('M4', min_value=0, max_value=100, value=3079),
-        st.sidebar.slider('M3', min_value=0, max_value=100, value=1573),
-        st.sidebar.slider('M2', min_value=0, max_value=100, value=672),
-        st.sidebar.slider('M1', min_value=0, max_value=100, value=1)
+        int(st.sidebar.text_input('M5', value=6841)),
+        int(st.sidebar.text_input('M4', value=3079)),
+        int(st.sidebar.text_input('M3', value=1573)),
+        int(st.sidebar.text_input('M2', value=672)),
+        int(st.sidebar.text_input('M1', value=1))
     ]
     
     # Calculate RFM values
