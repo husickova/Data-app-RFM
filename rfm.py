@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -118,6 +118,9 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
+    # Remove any rows with NaN values in 'Category' or 'id' to avoid treemap errors
+    rfm_df.dropna(subset=['Category', 'id'], inplace=True)
+
     # Initialize selected_button
     selected_button = 'About categories'
 
@@ -132,13 +135,14 @@ try:
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
         ("3D Scatter Plot", "3D Scatter Plot"),
         ("Pareto Chart", "Pareto Chart"),
-        ("Heatmap R & F", "Heatmap R & F")
+        ("Heatmap R & F", "Heatmap R & F"),
+        ("Average Order Size (AOS)", "AOS")
     ]
 
     # Create columns for buttons to be displayed in rows
     row1 = st.columns(4)
     row2 = st.columns(4)
-    row3 = st.columns(2)
+    row3 = st.columns(3)
 
     rows = [row1, row2, row3]
 
@@ -175,6 +179,7 @@ try:
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
+    if selected_button == 'AOS':
         # Calculate and plot Average Order Size (AOS)
         filtered_category_df['AOS'] = filtered_category_df['Monetary'] / filtered_category_df['Frequency']
         aos_df = filtered_category_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
