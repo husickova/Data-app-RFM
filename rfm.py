@@ -53,22 +53,22 @@ try:
     # Add inputs for RFM parameters
     st.sidebar.markdown("### RFM Parameters")
     recency_params = (
-        st.sidebar.slider('Recency threshold 1', 0, 100, 3),
-        st.sidebar.slider('Recency threshold 2', 0, 100, 10),
-        st.sidebar.slider('Recency threshold 3', 0, 100, 25),
-        st.sidebar.slider('Recency threshold 4', 0, 100, 66)
+        int(st.sidebar.text_input('Recency threshold 1', 3)),
+        int(st.sidebar.text_input('Recency threshold 2', 10)),
+        int(st.sidebar.text_input('Recency threshold 3', 25)),
+        int(st.sidebar.text_input('Recency threshold 4', 66))
     )
     frequency_params = (
-        st.sidebar.slider('Frequency threshold 1', 0.0, 100.0, 13.6),
-        st.sidebar.slider('Frequency threshold 2', 0.0, 100.0, 24.5),
-        st.sidebar.slider('Frequency threshold 3', 0.0, 100.0, 38.8),
-        st.sidebar.slider('Frequency threshold 4', 0.0, 100.0, 66.6)
+        float(st.sidebar.text_input('Frequency threshold 1', 13.6)),
+        float(st.sidebar.text_input('Frequency threshold 2', 24.5)),
+        float(st.sidebar.text_input('Frequency threshold 3', 38.8)),
+        float(st.sidebar.text_input('Frequency threshold 4', 66.6))
     )
     monetary_params = (
-        st.sidebar.slider('Monetary threshold 1', 0.0, 10000.0, 6841),
-        st.sidebar.slider('Monetary threshold 2', 0.0, 10000.0, 3079),
-        st.sidebar.slider('Monetary threshold 3', 0.0, 10000.0, 1573),
-        st.sidebar.slider('Monetary threshold 4', 0.0, 10000.0, 672)
+        float(st.sidebar.text_input('Monetary threshold 1', 6841)),
+        float(st.sidebar.text_input('Monetary threshold 2', 3079)),
+        float(st.sidebar.text_input('Monetary threshold 3', 1573)),
+        float(st.sidebar.text_input('Monetary threshold 4', 672))
     )
     
     # Filter data based on selected dates
@@ -143,10 +143,8 @@ try:
 
     # Create buttons
     buttons = [
-        ("Segmentation", "About categories"),
-        ("Recency", "Recency"),
-        ("Frequency", "Frequency"),
-        ("Monetary", "Monetary"),
+        ("About Segmentation", "About categories"),
+        ("About Customers", "About Customers"),
         ("Scatter Recency vs Frequency", "Scatter Recency vs Frequency"),
         ("Scatter Frequency vs Monetary", "Scatter Frequency vs Monetary"),
         ("Scatter Recency vs Monetary", "Scatter Recency vs Monetary"),
@@ -177,21 +175,19 @@ try:
     # Filter data based on the selected categories
     filtered_category_df = rfm_df
 
-    if selected_button == 'Recency':
+    if selected_button == 'About Customers':
         fig1 = px.histogram(filtered_category_df, x='Recency', title='Histogram Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
 
-    if selected_button == 'Frequency':
         fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
 
-    if selected_button == 'Monetary':
         # Filter out extreme values
         filtered_monetary_df = filtered_category_df[filtered_category_df['Monetary'] <= filtered_category_df['Monetary'].quantile(0.95)]
         fig1 = px.histogram(filtered_monetary_df, x='Monetary', title='Histogram Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
