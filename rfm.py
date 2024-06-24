@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -118,41 +118,8 @@ try:
     ]
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
-    # Customizing the display for "About categories"
-    if selected_button == 'About categories':
-        fig = px.treemap(
-            rfm_df, 
-            path=['Category', 'id'], 
-            values='Monetary', 
-            color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories'
-        )
-        st.plotly_chart(fig)
-
-    # CSS for styling buttons
-    st.markdown("""
-    <style>
-    .stButton > button {
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    .custom-button {
-        background-color: lightgray;
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    .stMarkdown > div > div > div > div > div:first-child > div {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .stMarkdown > div > div > div > div > div:first-child > div > div {
-        flex-grow: 0;
-        margin-right: 5px;
-        margin-bottom: 5px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
+    # Initialize selected_button
+    selected_button = 'About categories'
 
     # Create buttons
     buttons = [
@@ -167,8 +134,6 @@ try:
         ("Pareto Chart", "Pareto Chart"),
         ("Heatmap R & F", "Heatmap R & F")
     ]
-
-    selected_button = None
 
     # Create columns for buttons to be displayed in rows
     row1 = st.columns(4)
@@ -299,6 +264,18 @@ try:
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
         fig = px.imshow(heatmap_data, title='Heatmap of Recency and Frequency', color_continuous_scale='Blues')
+        st.plotly_chart(fig)
+
+    if selected_button == 'About categories':
+        # Customizing the display for "About categories"
+        fig = px.treemap(
+            rfm_df, 
+            path=['Category', 'id'], 
+            values='Monetary', 
+            color='Category', 
+            color_discrete_sequence=px.colors.qualitative.Pastel, 
+            title='Customer Distribution by RFM Categories'
+        )
         st.plotly_chart(fig)
 
 except FileNotFoundError:
