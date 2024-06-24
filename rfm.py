@@ -119,15 +119,16 @@ try:
     rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
 
     # Customizing the display for "About categories"
-    fig = px.treemap(
-        rfm_df, 
-        path=['Category'], 
-        values='Monetary', 
-        color='Category', 
-        color_discrete_sequence=px.colors.qualitative.Pastel, 
-        title='Customer Distribution by RFM Categories'
-    )
-    st.plotly_chart(fig)
+    if selected_button == 'About categories':
+        fig = px.treemap(
+            rfm_df, 
+            path=['Category', 'id'], 
+            values='Monetary', 
+            color='Category', 
+            color_discrete_sequence=px.colors.qualitative.Pastel, 
+            title='Customer Distribution by RFM Categories'
+        )
+        st.plotly_chart(fig)
 
     # CSS for styling buttons
     st.markdown("""
@@ -294,18 +295,6 @@ try:
 
         st.plotly_chart(fig)
         st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
-
-    if selected_button == 'About categories':
-        # Customizing the display for "About categories"
-        fig = px.treemap(
-            rfm_df, 
-            path=['Category'], 
-            values='Monetary', 
-            color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories'
-        )
-        st.plotly_chart(fig)
 
     if selected_button == 'Heatmap R & F':
         heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='Monetary', aggfunc='mean').fillna(0)
