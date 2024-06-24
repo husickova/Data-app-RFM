@@ -39,7 +39,7 @@ def assign_category(r, f):
         return 'Uncategorized'
 
 # Load CSV file
-csv_path = "rfm-data.csv"
+csv_path = "/mnt/data/rfm-data.csv"
 try:
     df = pd.read_csv(csv_path)
     
@@ -111,9 +111,9 @@ try:
     st.write(rfm_df[['R_rank', 'F_rank', 'M_rank']].head())
 
     # Convert ranks to str for concatenation
-    rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
-    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
-    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
+    rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(int).astype(str)  # Reverse the R rank
+    rfm_df['F_rank'] = rfm_df['F_rank'].astype(int).astype(str)
+    rfm_df['M_rank'] = rfm_df['M_rank'].astype(int).astype(str)
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank'] + rfm_df['M_rank']
 
@@ -179,8 +179,7 @@ try:
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
-
-    if selected_button == 'Frequency':
+        if selected_button == 'Frequency':
         fig1 = px.histogram(filtered_category_df, x='Frequency', title='Histogram Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig1)
@@ -300,8 +299,20 @@ try:
             title='Customer Distribution by RFM Categories'
         )
         st.plotly_chart(fig)
+        
+        # Display debug information
+        st.write("RFM Dataframe Head:")
+        st.write(rfm_df.head())
+
+        st.write("Quantile Ranks:")
+        st.write(rfm_df[['R_rank', 'F_rank', 'M_rank']].head())
+
+        st.write("Assigned Categories:")
+        st.write(rfm_df[['RFM_Score', 'Category']].head())
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
     st.error(f"An error occurred while loading the file: {e}")
+
+   
