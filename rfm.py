@@ -26,16 +26,16 @@ try:
     # Collapsible section for RFM parameters
     with st.sidebar.expander("RFM Parameters"):
         recency_params = sorted([
-            int(st.sidebar.text_input('R2', 66)),
-            int(st.sidebar.text_input('R3', 25)),
-            int(st.sidebar.text_input('R4', 10)),
-            int(st.sidebar.text_input('R5', 3))
+            float(st.sidebar.text_input('R2', 66.6)),
+            float(st.sidebar.text_input('R3', 38.8)),
+            float(st.sidebar.text_input('R4', 24.5)),
+            float(st.sidebar.text_input('R5', 13.6))
         ])
         frequency_params = sorted([
-            float(st.sidebar.text_input('F2', 66.6)),
-            float(st.sidebar.text_input('F3', 38.8)),
-            float(st.sidebar.text_input('F4', 24.5)),
-            float(st.sidebar.text_input('F5', 13.6))
+            int(st.sidebar.text_input('F2', 66)),
+            int(st.sidebar.text_input('F3', 25)),
+            int(st.sidebar.text_input('F4', 10)),
+            int(st.sidebar.text_input('F5', 3))
         ])
         monetary_params = sorted([
             float(st.sidebar.text_input('M2', 672)),
