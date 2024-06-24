@@ -94,10 +94,18 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
+    # Print debug information
+    st.write("RFM Dataframe Head:")
+    st.write(rfm_df.head())
+
     # Assign quantile ranks based on custom boundaries
     rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[-1] + sorted(r_quantiles), labels=False, include_lowest=True) + 1
     rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[-1] + sorted(f_quantiles), labels=False, include_lowest=True) + 1
     rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[-1] + sorted(m_quantiles), labels=False, include_lowest=True) + 1
+
+    # Print debug information
+    st.write("Quantile Ranks:")
+    st.write(rfm_df[['R_rank', 'F_rank', 'M_rank']].head())
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = (6 - rfm_df['R_rank']).astype(str)  # Reverse the R rank
@@ -108,6 +116,10 @@ try:
 
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+
+    # Print debug information
+    st.write("Assigned Categories:")
+    st.write(rfm_df[['RFM_Score', 'Category']].head())
 
     # Sort categories by numeric order
     category_order = [
@@ -183,6 +195,9 @@ try:
         # Calculate and plot Average Order Size (AOS)
         filtered_category_df['AOS'] = filtered_category_df['Monetary'] / filtered_category_df['Frequency']
         aos_df = filtered_category_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
+
+        st.write("AOS Data:")
+        st.write(aos_df)
 
         fig3 = px.bar(aos_df, x='Category', y='AOS', title='Average Order Size (AOS) by Category', color='Category', 
                       category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
