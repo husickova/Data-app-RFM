@@ -90,10 +90,10 @@ try:
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
     # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[3] else 4 if x >= recency_params[2] else 3 if x >= recency_params[1] else 2 if x >= recency_params[0] else 1)
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[3] else 4 if x <= recency_params[2] else 3 if x <= recency_params[1] else 2 if x <= recency_params[0] else 1)
     
     # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x >= frequency_params[2] else 3 if x >= frequency_params[1] else 2 if x >= frequency_params[0] else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[3] else 4 if x <= frequency_params[2] else 3 if x <= frequency_params[1] else 2 if x <= frequency_params[0] else 1)
     
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[3] else 4 if x <= monetary_params[2] else 3 if x <= monetary_params[1] else 2 if x <= monetary_params[0] else 1)
