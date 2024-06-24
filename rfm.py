@@ -50,12 +50,6 @@ try:
     start_date = st.sidebar.date_input('Start date', df['date'].min().date())
     end_date = st.sidebar.date_input('End date', df['date'].max().date())
     
-    # Add inputs for RFM parameters
-    st.sidebar.markdown("### RFM Parameters")
-    recency_params = st.sidebar.slider('Recency thresholds', 0, 100, (3, 10, 25, 66), 1)
-    frequency_params = st.sidebar.slider('Frequency thresholds', 0.0, 100.0, (13.6, 7.2, 3.8, 1.6), 0.1)
-    monetary_params = st.sidebar.slider('Monetary thresholds', 0.0, 10000.0, (6841, 3079, 1573, 672), 1.0)
-    
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
@@ -75,13 +69,13 @@ try:
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
     # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= recency_params[0] else 4 if x <= recency_params[1] else 3 if x <= recency_params[2] else 2 if x <= recency_params[3] else 1)
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
     
     # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= frequency_params[0] else 4 if x >= frequency_params[1] else 3 if x >= frequency_params[2] else 2 if x >= frequency_params[3] else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= 13.6 else 4 if x >= 7.2 else 3 if x >= 3.8 else 2 if x >= 1.6 else 1)
     
     # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= monetary_params[0] else 4 if x >= monetary_params[1] else 3 if x >= monetary_params[2] else 2 if x >= monetary_params[3] else 1)
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
