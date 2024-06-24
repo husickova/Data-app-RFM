@@ -99,9 +99,12 @@ try:
     st.write(rfm_df.head())
 
     # Assign quantile ranks based on custom boundaries
-    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[-1] + sorted(r_quantiles), labels=False, include_lowest=True) + 1
-    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[-1] + sorted(f_quantiles), labels=False, include_lowest=True) + 1
-    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[-1] + sorted(m_quantiles), labels=False, include_lowest=True) + 1
+    rfm_df['R_rank'] = pd.cut(rfm_df['Recency'], bins=[-1] + r_quantiles, labels=False, include_lowest=True) + 1
+    rfm_df['F_rank'] = pd.cut(rfm_df['Frequency'], bins=[-1] + f_quantiles, labels=False, include_lowest=True) + 1
+    rfm_df['M_rank'] = pd.cut(rfm_df['Monetary'], bins=[-1] + m_quantiles, labels=False, include_lowest=True) + 1
+
+    # Replace None values with 5 (highest rank for recency)
+    rfm_df['R_rank'] = rfm_df['R_rank'].fillna(5)
 
     # Print debug information
     st.write("Quantile Ranks:")
