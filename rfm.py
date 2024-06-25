@@ -68,13 +68,12 @@ try:
     
     # Calculate Frequency as number of days between the first and last purchase / number of purchases
     frequency_df = filtered_df.groupby('id').agg({
-    'date': lambda x: (x.max() - x.min()).days / len(x) if len(x) > 1 else (max_date - x.max()).days / 1
+    'date': lambda x: (x.max() - x.min()).days / len(x) if len(x) > 1 else 1
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
 
 
-    
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
