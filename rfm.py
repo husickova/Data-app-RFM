@@ -395,7 +395,7 @@ try:
         except KeyError as e:
             st.error(f"Error loading OpenAI token: {e}")
     
-             Function to get recommendation from OpenAI
+            # Function to get recommendation from OpenAI
         def get_recommendation():
             openai.api_key = st.secrets["OPENAI_TOKEN"]
             prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
