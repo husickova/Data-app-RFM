@@ -188,7 +188,12 @@ try:
     
         # Monthly revenue over time with stacked bar plot by category
         monthly_revenue = filtered_df.set_index('date').resample('M')['value'].sum().reset_index()
+        
+        # Ensure all categories are present
         category_monthly_revenue = filtered_df.groupby([pd.Grouper(key='date', freq='M'), 'Category'])['value'].sum().unstack().fillna(0)
+        for category in category_order:
+            if category not in category_monthly_revenue.columns:
+                category_monthly_revenue[category] = 0
     
         fig3 = go.Figure()
         fig3.add_trace(go.Scatter(x=monthly_revenue['date'], y=monthly_revenue['value'], mode='lines', name='Total Revenue'))
@@ -226,6 +231,7 @@ try:
         fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
+    
 
     if selected_button == 'About Segmentation':
 
@@ -235,7 +241,7 @@ try:
             path=['Category'], 
             values='Monetary', 
             color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel,  # Ensuring same color scheme
+            color_discrete_sequence=px.colors.qualitative.Pastel,
             title='Customer Distribution by RFM Categories (Monetary)'
         )
     
@@ -265,7 +271,6 @@ try:
         fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
         fig2.data[0].customdata = category_counts[['Percentage']].values
         st.plotly_chart(fig2)
-
 
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
