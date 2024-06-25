@@ -236,7 +236,7 @@ try:
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
     
-   if selected_button == 'About Segmentation':
+    if selected_button == 'About Segmentation':
         # Customizing the display for "About Segmentation"
         fig1 = px.treemap(
             rfm_df, 
