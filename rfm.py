@@ -370,25 +370,25 @@ try:
     
         st.plotly_chart(fig)
 
-  if selected_button == 'Recommended Strategy':
+    if selected_button == 'Recommended Strategy':
         st.markdown("## Recommended Strategy")
     
-        # Function to get recommendation from OpenAI
-    def get_recommendation():
-        openai.api_key = st.secrets["OPENAI_TOKEN"]
-        prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
-                  "data o nich jsou v části: about customers a about segmentation, "
-                  "navrhni vždy 5 klíčových doporučení.")
+            # Function to get recommendation from OpenAI
+        def get_recommendation():
+            openai.api_key = st.secrets["OPENAI_TOKEN"]
+            prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
+                      "data o nich jsou v části: about customers a about segmentation, "
+                      "navrhni vždy 5 klíčových doporučení.")
+        
+            response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=prompt,
+                max_tokens=150
+            )
+            return response.choices[0].text.strip()
     
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=prompt,
-            max_tokens=150
-        )
-        return response.choices[0].text.strip()
-
-    recommendation = get_recommendation()
-    st.markdown(recommendation)
+        recommendation = get_recommendation()
+        st.markdown(recommendation)
 
 
 
