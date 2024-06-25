@@ -372,6 +372,14 @@ try:
 
     if selected_button == 'TO DO Analysis':
         st.markdown("## Recommended Strategy")
+
+                # Test if the secret key is correctly loaded
+        st.write("Testing OpenAI token loading...")
+        try:
+            openai_token = st.secrets["OPENAI_TOKEN"]
+            st.write("OpenAI token loaded successfully.")
+        except KeyError as e:
+            st.error(f"Error loading OpenAI token: {e}")
     
             # Function to get recommendation from OpenAI
         def get_recommendation():
