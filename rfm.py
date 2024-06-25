@@ -84,15 +84,23 @@ try:
     rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
     
     # Assign F score based on the new methodology
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(
-        lambda x: 5 if pd.notna(x) and x <= 13.6 else (
-            4 if pd.notna(x) and x <= 24.5 else (
-                3 if pd.notna(x) and x <= 38.8 else (
-                    2 if pd.notna(x) and x <= 66.6 else 1
-                )
-            )
-        )
-    )
+    def calculate_f_rank(frequency):
+        if pd.notna(frequency):
+            if frequency <= 13.6:
+                return 5
+            elif frequency <= 24.5:
+                return 4
+            elif frequency <= 38.8:
+                return 3
+            elif frequency <= 66.6:
+                return 2
+            else:
+                return 1
+        else:
+            return 1
+    
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(calculate_f_rank)
+
 
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
