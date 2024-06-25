@@ -99,7 +99,7 @@ try:
     # Filter data based on selected dates
     filtered_df = df[(df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))]
     
-    # Calculate RFM values
+   # Calculate RFM values
     max_date = filtered_df['date'].max() + timedelta(days=1)
     rfm_df = filtered_df.groupby('id').agg({
         'date': lambda x: (max_date - x.max()).days,  # Recency: days since last purchase
@@ -107,19 +107,20 @@ try:
         'value': 'sum'  # Monetary: total value of purchases
     }).rename(columns={
         'date': 'Recency',
-        'id': 'Temp_Frequency',
+        'id': 'Temp_Frequency',  # Temporary frequency, count of purchases
         'value': 'Monetary'
     }).reset_index()
     
     # Calculate Frequency as number of days between the first and last purchase / number of purchases
     frequency_df = filtered_df.groupby('id').agg({
-        'date': lambda x: (x.max() - x.min()).days / len(x) if len(x) >= 1
+        'date': lambda x: (x.max() - x.min()).days / len(x)  # Frequency calculation without condition for single purchase
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
     
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
+
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
