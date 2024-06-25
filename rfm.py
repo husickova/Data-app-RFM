@@ -39,6 +39,14 @@ def assign_category(r, f):
     else:
         return 'Uncategorized'
 
+# Definice category_order
+category_order = [
+    '01. Champions', '02. Loyal Customers', '03. Potential Loyalists',
+    '04. Recent Customers', '05. Promising', '06. Need Attention',
+    '07. About to Sleep', '08. Can\'t Lose', '09. At Risk',
+    '10. Hibernating', '11. Lost'
+]
+
 # Function to recalculate RFM values based on parameters
 def recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2):
     # Assign R score
