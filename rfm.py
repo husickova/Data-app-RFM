@@ -67,7 +67,7 @@ try:
     
     # Calculate Frequency as the average number of days between purchases
     frequency_df = filtered_df.groupby('id').agg({
-        'date': lambda x: (x.max() - x.min()).days / (len(x) - 1) if len(x) > 1 else None
+        'date': lambda x: (x.diff().mean().days if len(x) > 1 else None)
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
@@ -76,16 +76,17 @@ try:
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
     # Calculate Average Order Size (AOS)
-    rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if x['Frequency'] not in [None, 0] else 0, axis=1)
+    rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
     
     # Assign R score
     rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
     
     # Assign F score based on the new methodology
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x is not None and x <= 13.6 else 4 if x is not None and x <= 24.5 else 3 if x is not None and x <= 38.8 else 2 if x is not None and x <= 66.6 else 1)
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if pd.notna(x) and x <= 13.6 else 4 if pd.notna(x) and x <= 24.5 else 3 if pd.notna(x) and x <= 38.8 else 2 if pd.notna(x) and x <= 66.6 else 1)
     
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
+
     
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
@@ -96,8 +97,6 @@ try:
     
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
-
-
 
     # Sort categories by numeric order
     category_order = [
