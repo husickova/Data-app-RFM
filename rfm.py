@@ -66,11 +66,7 @@ try:
     }).reset_index()
     
     # Calculate Frequency as the average number of days between purchases
-    frequency_df = filtered_df.groupby('id').agg({
-        'date': lambda x: (x.diff().mean().days if len(x) > 1 else None)
-    }).rename(columns={
-        'date': 'Frequency'
-    }).reset_index()
+    frequency_df = filtered_df.groupby('id')['date'].apply(lambda x: x.diff().mean().days if len(x) > 1 else pd.NA).reset_index().rename(columns={'date': 'Frequency'})
     
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
@@ -86,6 +82,7 @@ try:
     
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
+
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
