@@ -68,16 +68,17 @@ try:
     # Calculate Frequency as the average number of days between purchases
     # For single purchase, frequency will be 1 / recency
     frequency_df = filtered_df.groupby('id').agg({
-        'date': lambda x: 1 / (x.diff().mean().days) if len(x) > 1 else (1 / (max_date - x.max()).days if (max_date - x.max()).days != 0 else 1)
+        'date': lambda x: (x.diff().mean().days if len(x) > 1 else (max_date - x.max()).days)
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
     
+    # Avoid division by zero by setting frequency to 1 for cases where the recency is zero
+    frequency_df['Frequency'] = frequency_df['Frequency'].apply(lambda x: 1/x if x != 0 else 1)
+    
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
-    
-    # Replace any infinite values resulting from division by very small numbers
-    rfm_df['Frequency'].replace([float('inf'), -float('inf')], 1, inplace=True)
+
 
     
     # Calculate Average Order Size (AOS)
