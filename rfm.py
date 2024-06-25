@@ -179,88 +179,75 @@ try:
         st.plotly_chart(fig3)
         st.markdown("<p style='font-size: small;'>Revenue trend over time.</p>", unsafe_allow_html=True)
 
-    if selected_button == 'About Segmentation':
-        # Customizing the display for "About Segmentation"
-        fig = px.treemap(
-            rfm_df, 
-            path=['Category'], 
-            values='Monetary', 
-            color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories (Monetary)'
-        )
-
-        # Calculate percentage of total monetary value for each category
-        category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
-        category_percentage = category_percentage.round(2).astype(str) + '%'
-        fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
-        st.plotly_chart(fig)
-        
-        # Treemap by number of customers
-        fig2 = px.treemap(
-            rfm_df, 
-            path=['Category'], 
-            values='id',  # Use 'id' to count number of customers
-            color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories (Number of Customers)'
-        )
-        st.plotly_chart(fig2)
-
     if selected_button == 'RFM Tuning':
-        st.markdown("### RFM Parameters")
-        r5 = int(st.text_input('R5', 3))
-        r4 = int(st.text_input('R4', 10))
-        r3 = int(st.text_input('R3', 25))
-        r2 = int(st.text_input('R2', 66))
+    with st.sidebar.expander("RFM Parameters", expanded=True):
+        st.markdown("### Recency Parameters")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            r5 = int(st.text_input('R5', 3))
+        with col2:
+            r4 = int(st.text_input('R4', 10))
+        with col3:
+            r3 = int(st.text_input('R3', 25))
+        with col4:
+            r2 = int(st.text_input('R2', 66))
 
-        f5 = float(st.text_input('F5', 13.6))
-        f4 = float(st.text_input('F4', 24.5))
-        f3 = float(st.text_input('F3', 38.8))
-        f2 = float(st.text_input('F2', 66.6))
+        st.markdown("### Frequency Parameters")
+        with col1:
+            f5 = float(st.text_input('F5', 13.6))
+        with col2:
+            f4 = float(st.text_input('F4', 24.5))
+        with col3:
+            f3 = float(st.text_input('F3', 38.8))
+        with col4:
+            f2 = float(st.text_input('F2', 66.6))
 
-        m5 = float(st.text_input('M5', 6841))
-        m4 = float(st.text_input('M4', 3079))
-        m3 = float(st.text_input('M3', 1573))
-        m2 = float(st.text_input('M2', 672))
+        st.markdown("### Monetary Parameters")
+        with col1:
+            m5 = float(st.text_input('M5', 6841))
+        with col2:
+            m4 = float(st.text_input('M4', 3079))
+        with col3:
+            m3 = float(st.text_input('M3', 1573))
+        with col4:
+            m2 = float(st.text_input('M2', 672))
 
-        if 'rfm_df' in locals():
-            if st.button('Update RFM Segmentation'):
-                # Recalculate ranks based on updated parameters
-                rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
-                rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
-                rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
-                
-                # Convert ranks to str for concatenation
-                rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
-                rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
-                rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
-                
-                rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
-                
-                # Assign categories based on R and F scores using regex
-                rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
-                
-                st.success('RFM segmentation updated!')
+    if 'rfm_df' in locals():
+        if st.button('Update RFM Segmentation'):
+            # Recalculate ranks based on updated parameters
+            rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
+            rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
+            rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
+            
+            # Convert ranks to str for concatenation
+            rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
+            rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+            rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
+            
+            rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
+            
+            # Assign categories based on R and F scores using regex
+            rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+            
+            st.success('RFM segmentation updated!')
 
-        # Display the updated RFM dataframe
-        st.dataframe(rfm_df.head())
-        
-        # Display the scatter plots and other graphs
-        st.markdown("### RFM Scatter Plots")
-        if st.button("Scatter Recency vs Frequency"):
+    # Display the updated RFM dataframe
+    st.dataframe(rfm_df.head())
+
+    if 'selected_button' in locals() and selected_button == 'RFM Tuning':
+        if selected_button == 'Scatter Recency vs Frequency':
             fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
             st.plotly_chart(fig)
 
-        if st.button("Scatter Frequency vs Monetary"):
+        if selected_button == 'Scatter Frequency vs Monetary':
             fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
             st.plotly_chart(fig)
 
-        if st.button("Scatter Recency vs Monetary"):
+        if selected_button == 'Scatter Recency vs Monetary':
             fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
             st.plotly_chart(fig)
 
-        if st.button("3D Scatter Plot"):
+        if selected_button == '3D Scatter Plot':
             fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                                 color='Category', 
                                 title='3D Scatter Plot of Recency, Frequency, and Monetary',
@@ -268,7 +255,7 @@ try:
             fig.update_traces(marker=dict(size=5))  # Adjust marker size
             st.plotly_chart(fig)
 
-        if st.button("Pareto Chart"):
+        if selected_button == 'Pareto Chart':
             filtered_category_df_sorted = filtered_category_df.sort_values('Monetary', ascending=False)
             
             # Aggregating data into 11 categories for readability
@@ -325,7 +312,7 @@ try:
             st.plotly_chart(fig)
             st.markdown("<p style='font-size: small;'>Pareto chart shows the percentage contribution of each customer category to the total revenue.</p>", unsafe_allow_html=True)
 
-        if st.button("Heatmap R & F"):
+        if selected_button == 'Heatmap R & F':
             # Calculate average order size (AOS) for each R and F combination
             heatmap_data = rfm_df.pivot_table(index='R_rank', columns='F_rank', values='AOS', aggfunc='mean').fillna(0)
         
