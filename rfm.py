@@ -222,7 +222,7 @@ try:
         fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
 
-        if selected_button == 'About Segmentation':
+    if selected_button == 'About Segmentation':
 
         # Customizing the display for "About Segmentation"
         fig1 = px.treemap(
