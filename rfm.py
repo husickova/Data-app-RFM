@@ -192,7 +192,7 @@ try:
             with col4:
                 r2 = int(st.text_input('R2', 66))
     
-            st.markdown("### Frequency Parameters")
+            st.markdown("")
             with col1:
                 f5 = float(st.text_input('F5', 13.6))
             with col2:
@@ -202,7 +202,7 @@ try:
             with col4:
                 f2 = float(st.text_input('F2', 66.6))
     
-            st.markdown("### Monetary Parameters")
+            st.markdown("")
             with col1:
                 m5 = float(st.text_input('M5', 6841))
             with col2:
