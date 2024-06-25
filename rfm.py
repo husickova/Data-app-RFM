@@ -199,26 +199,29 @@ try:
         )
     
         # Calculate percentage of total monetary value for each category
-        category_percentage_monetary = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
-        category_percentage_monetary = category_percentage_monetary.round(2).astype(str) + '%'
-        fig1.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage_monetary[fig1.data[0].ids].values
+        category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
+        category_percentage = category_percentage.round(2).astype(str) + '%'
+        fig1.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig1.data[0].ids].values
         st.plotly_chart(fig1)
-    
+        
         # Calculate the number of customers in each category
+        category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
+        category_counts.columns = ['Category', 'Number of Customers']
+    
+        # Display the treemap with the number of customers in each category
         fig2 = px.treemap(
-            rfm_df, 
+            category_counts, 
             path=['Category'], 
-            values='id', 
+            values='Number of Customers', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories (Customer Count)'
         )
-    
-        # Calculate percentage of total customer count for each category
-        category_count = rfm_df['Category'].value_counts(normalize=True) * 100
-        category_count = category_count.round(2).astype(str) + '%'
-        fig2.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_count[fig2.data[0].ids].values
         st.plotly_chart(fig2)
+    
+        # Remove the table as requested
+        # st.markdown("### Number of Customers in Each Category")
+        # st.dataframe(category_counts)
 
 
     if selected_button == 'RFM Tuning':
