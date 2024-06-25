@@ -65,27 +65,38 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
+    # Calculate Frequency as the average number of days between purchases
+    frequency_df = filtered_df.groupby('id').agg({
+        'date': lambda x: x.diff().mean().days
+    }).rename(columns={
+        'date': 'Frequency'
+    }).reset_index()
+    
+    # Merge the frequency calculation back into the RFM dataframe
+    rfm_df = rfm_df.drop(columns=['Frequency']).merge(frequency_df, on='id')
+    
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
     
     # Assign R score
     rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
     
-    # Assign F score
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= 13.6 else 4 if x >= 7.2 else 3 if x >= 3.8 else 2 if x >= 1.6 else 1)
+    # Assign F score based on the new methodology
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x <= 7 else 4 if x <= 14 else 3 if x <= 30 else 2 if x <= 60 else 1)
     
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
-
+    
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
     rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
     rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
     
     rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
-
+    
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+
 
     # Sort categories by numeric order
     category_order = [
