@@ -179,7 +179,7 @@ try:
         st.plotly_chart(fig3)
         st.markdown("<p style='font-size: small;'>Revenue trend over time.</p>", unsafe_allow_html=True)
 
-     if selected_button == 'RFM Tuning':
+    if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
             st.markdown("### Recency Parameters")
             col1, col2, col3, col4 = st.columns(4)
