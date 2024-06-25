@@ -183,13 +183,26 @@ try:
     filtered_category_df = rfm_df
 
     if selected_button == 'About Customers':
-
-        # Monthly revenue over time
+    
+        # Monthly revenue over time with stacked bar plot by category
         monthly_revenue = filtered_df.set_index('date').resample('M')['value'].sum().reset_index()
-        fig3 = px.line(monthly_revenue, x='date', y='value', title='Monthly Revenue Over Time')
+        category_monthly_revenue = filtered_df.groupby([pd.Grouper(key='date', freq='M'), 'Category'])['value'].sum().unstack().fillna(0)
+    
+        fig3 = go.Figure()
+        fig3.add_trace(go.Scatter(x=monthly_revenue['date'], y=monthly_revenue['value'], mode='lines', name='Total Revenue'))
+    
+        for category in category_order:
+            fig3.add_trace(go.Bar(
+                x=category_monthly_revenue.index,
+                y=category_monthly_revenue[category],
+                name=category,
+                marker_color=px.colors.qualitative.Pastel[category_order.index(category)]
+            ))
+    
+        fig3.update_layout(barmode='stack', title='Monthly Revenue Over Time', xaxis_title='Date', yaxis_title='Revenue')
         st.plotly_chart(fig3)
         st.markdown("<p style='font-size: small;'>Revenue trend over time.</p>", unsafe_allow_html=True)
-        
+    
         # Average Order Size by Category
         rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
         aos_df = rfm_df.groupby('Category').agg({'AOS': 'mean'}).reset_index()
@@ -197,20 +210,21 @@ try:
                      color='Category', category_orders={'Category': category_order}, 
                      color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig)
-
+    
         fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
-
+    
         fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
-
+    
         # Filter out extreme values
         filtered_monetary_df = filtered_category_df[filtered_category_df['Monetary'] <= filtered_category_df['Monetary'].quantile(0.95)]
         fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
+
 
     if selected_button == 'About Segmentation':
         # Customizing the display for "About Segmentation"
@@ -250,7 +264,6 @@ try:
         fig2.data[0].customdata = category_counts[['Percentage']].values
         st.plotly_chart(fig2)
 
-        
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
             st.markdown("### Recency Parameters")
