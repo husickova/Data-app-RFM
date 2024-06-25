@@ -405,10 +405,14 @@ try:
         # Function to get recommendation from OpenAI
         def get_recommendation():
             openai.api_key = st.secrets["OPENAI_TOKEN"]
-            prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
-                      "data o nich jsou v části: about customers a about segmentation, "
-                      "navrhni vždy 5 klíčových doporučení.")
+            # Convert the filtered data frame to a CSV string
+            filtered_data_str = filtered_category_df.to_csv(index=False)
             
+            prompt = (f"Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
+                      f"data o nich jsou v části: about customers a about segmentation, "
+                      f"navrhni vždy 5 klíčových doporučení.\n\n"
+                      f"Data:\n{filtered_data_str}")
+    
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
@@ -441,6 +445,7 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
+
 
 
 except FileNotFoundError:
