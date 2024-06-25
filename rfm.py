@@ -218,16 +218,8 @@ try:
             title='Customer Distribution by RFM Categories (Customer Count)'
         )
 
-        # Calculate the number of customers in each category
-        category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
-        category_counts.columns = ['Category', 'Number of Customers']
         st.plotly_chart(fig2)
-    
-        # Remove the table as requested
-        # st.markdown("### Number of Customers in Each Category")
-        # st.dataframe(category_counts)
-
-
+        
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
             st.markdown("### Recency Parameters")
