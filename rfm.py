@@ -85,13 +85,13 @@ try:
     # Assign F score based on the new methodology
     def calculate_f_rank(frequency):
         if pd.notna(frequency):
-            if frequency >= 1 / 13.6:
+            if frequency >= 13.6:
                 return 5
-            elif frequency >= 1 / 24.5:
+            elif frequency >= 24.5:
                 return 4
-            elif frequency >= 1 / 38.8:
+            elif frequency >= 38.8:
                 return 3
-            elif frequency >= 1 / 66.6:
+            elif frequency >= 66.6:
                 return 2
             else:
                 return 1
