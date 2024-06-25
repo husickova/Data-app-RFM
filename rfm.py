@@ -182,36 +182,36 @@ try:
     # Filter data based on the selected categories
     filtered_category_df = rfm_df
 
-if selected_button == 'About Customers':
-    # Add 'Category' column to filtered_df
-    filtered_df = filtered_df.merge(rfm_df[['id', 'Category']], on='id', how='left')
-
-    # Monthly revenue over time with stacked bar plot by category
-    monthly_revenue = filtered_df.set_index('date').resample('M')['value'].sum().reset_index()
+    if selected_button == 'About Customers':
+        # Add 'Category' column to filtered_df
+        filtered_df = filtered_df.merge(rfm_df[['id', 'Category']], on='id', how='left')
     
-    # Ensure all categories are present
-    category_monthly_revenue = filtered_df.groupby([pd.Grouper(key='date', freq='M'), 'Category'])['value'].sum().unstack().fillna(0)
-    for category in category_order:
-        if category not in category_monthly_revenue.columns:
-            category_monthly_revenue[category] = 0
-
-    # Sort columns by category_order
-    category_monthly_revenue = category_monthly_revenue[category_order]
-
-    fig3 = go.Figure()
-    fig3.add_trace(go.Scatter(x=monthly_revenue['date'], y=monthly_revenue['value'], mode='lines', name='Total Revenue'))
-
-    for category in category_order:
-        fig3.add_trace(go.Bar(
-            x=category_monthly_revenue.index,
-            y=category_monthly_revenue[category],
-            name=category,
-            marker_color=px.colors.qualitative.Pastel[category_order.index(category)]
-        ))
-
-    fig3.update_layout(barmode='stack', title='Monthly Revenue Over Time', xaxis_title='Date', yaxis_title='Revenue', legend=dict(traceorder='normal'))
-    st.plotly_chart(fig3)
-    st.markdown("<p style='font-size: small;'>Revenue trend over time.</p>", unsafe_allow_html=True)
+        # Monthly revenue over time with stacked bar plot by category
+        monthly_revenue = filtered_df.set_index('date').resample('M')['value'].sum().reset_index()
+        
+        # Ensure all categories are present
+        category_monthly_revenue = filtered_df.groupby([pd.Grouper(key='date', freq='M'), 'Category'])['value'].sum().unstack().fillna(0)
+        for category in category_order:
+            if category not in category_monthly_revenue.columns:
+                category_monthly_revenue[category] = 0
+    
+        # Sort columns by category_order
+        category_monthly_revenue = category_monthly_revenue[category_order]
+    
+        fig3 = go.Figure()
+        fig3.add_trace(go.Scatter(x=monthly_revenue['date'], y=monthly_revenue['value'], mode='lines', name='Total Revenue'))
+    
+        for category in category_order:
+            fig3.add_trace(go.Bar(
+                x=category_monthly_revenue.index,
+                y=category_monthly_revenue[category],
+                name=category,
+                marker_color=px.colors.qualitative.Pastel[category_order.index(category)]
+            ))
+    
+        fig3.update_layout(barmode='stack', title='Monthly Revenue Over Time', xaxis_title='Date', yaxis_title='Revenue', legend=dict(traceorder='normal'))
+        st.plotly_chart(fig3)
+        st.markdown("<p style='font-size: small;'>Revenue trend over time.</p>", unsafe_allow_html=True)
 
     
         # Average Order Size by Category
