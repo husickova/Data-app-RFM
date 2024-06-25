@@ -189,7 +189,7 @@ try:
 
     if selected_button == 'About Segmentation':
         # Customizing the display for "About Segmentation"
-        fig = px.treemap(
+        fig1 = px.treemap(
             rfm_df, 
             path=['Category'], 
             values='Monetary', 
@@ -197,15 +197,15 @@ try:
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories (Monetary)'
         )
-
+    
         # Calculate percentage of total monetary value for each category
-        category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
-        category_percentage = category_percentage.round(2).astype(str) + '%'
-        fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig.data[0].ids].values
-        st.plotly_chart(fig)
-
+        category_percentage_monetary = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
+        category_percentage_monetary = category_percentage_monetary.round(2).astype(str) + '%'
+        fig1.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage_monetary[fig1.data[0].ids].values
+        st.plotly_chart(fig1)
+    
         # Calculate the number of customers in each category
-        fig = px.treemap(
+        fig2 = px.treemap(
             rfm_df, 
             path=['Category'], 
             values='id', 
@@ -213,12 +213,13 @@ try:
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories (Customer Count)'
         )
-
+    
         # Calculate percentage of total customer count for each category
         category_count = rfm_df['Category'].value_counts(normalize=True) * 100
         category_count = category_count.round(2).astype(str) + '%'
-        fig.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_count[fig.data[0].ids].values
-        st.plotly_chart(fig)
+        fig2.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_count[fig2.data[0].ids].values
+        st.plotly_chart(fig2)
+
 
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
