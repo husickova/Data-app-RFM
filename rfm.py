@@ -6,6 +6,17 @@ import plotly.graph_objects as go
 import re
 import openai
 
+# Test if the secret key is correctly loaded
+try:
+    openai_token = st.secrets["OPENAI_TOKEN"]
+    st.write("OpenAI token loaded successfully.")
+except KeyError as e:
+    st.error(f"Error loading OpenAI token: {e}")
+
+# If token loaded successfully, proceed with rest of the code
+if 'openai_token' in locals():
+    openai.api_key = openai_token
+
 # Application title with colored text
 st.markdown("""
 # RFM by <span style="color:dodgerblue">Keboola</span>
