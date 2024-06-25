@@ -39,6 +39,43 @@ def assign_category(r, f):
     else:
         return 'Uncategorized'
 
+# Function to recalculate RFM values based on parameters
+def recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2):
+    # Assign R score
+    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
+    
+    # Assign F score
+    def calculate_f_rank(frequency):
+        if pd.notna(frequency):
+            if frequency >= f5:
+                return 5
+            elif frequency >= f4:
+                return 4
+            elif frequency >= f3:
+                return 3
+            elif frequency >= f2:
+                return 2
+            else:
+                return 1
+        else:
+            return 1
+    rfm_df['F_rank'] = rfm_df['Frequency'].apply(calculate_f_rank)
+
+    # Assign M score based on AOS
+    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
+
+    # Convert ranks to str for concatenation
+    rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
+    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
+    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
+    
+    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
+    
+    # Assign categories based on R and F scores using regex
+    rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+    
+    return rfm_df
+
 # Load CSV file
 csv_path = "rfm-data.csv"
 try:
@@ -68,61 +105,23 @@ try:
     
     # Calculate Frequency as number of days between the first and last purchase / number of purchases
     frequency_df = filtered_df.groupby('id').agg({
-    'date': lambda x: (x.max() - x.min()).days / len(x) if len(x) > 1 else 1
+        'date': lambda x: (x.max() - x.min()).days / len(x) if len(x) > 1 else 1
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
-
-
+    
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
     
-    # Assign R score
-    rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
+    # Initial RFM calculation with default parameters
+    r5, r4, r3, r2 = 3, 10, 25, 66
+    f5, f4, f3, f2 = 13.6, 24.5, 38.8, 66.6
+    m5, m4, m3, m2 = 6841, 3079, 1573, 672
     
-    # Assign F score based on the new methodology
-    def calculate_f_rank(frequency):
-        if pd.notna(frequency):
-            if frequency >= 13.6:
-                return 5
-            elif frequency >= 24.5:
-                return 4
-            elif frequency >= 38.8:
-                return 3
-            elif frequency >= 66.6:
-                return 2
-            else:
-                return 1
-        else:
-            return 1
-    
-    rfm_df['F_rank'] = rfm_df['Frequency'].apply(calculate_f_rank)
-
-    # Assign M score based on AOS
-    rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
-
-    # Convert ranks to str for concatenation
-    rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
-    rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
-    rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
-    
-    rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
-    
-    # Assign categories based on R and F scores using regex
-    rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
-
-
-    # Sort categories by numeric order
-    category_order = [
-        '01. Champions', '02. Loyal Customers', '03. Potential Loyalists',
-        '04. Recent Customers', '05. Promising', '06. Need Attention',
-        '07. About to Sleep', '08. Can\'t Lose', '09. At Risk',
-        '10. Hibernating', '11. Lost'
-    ]
-    rfm_df['Category'] = pd.Categorical(rfm_df['Category'], categories=category_order, ordered=True)
+    rfm_df = recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2)
 
     # CSS for styling buttons
     st.markdown("""
@@ -279,23 +278,11 @@ try:
     
         if 'rfm_df' in locals():
             # Recalculate ranks based on updated parameters
-            rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= r5 else 4 if x <= r4 else 3 if x <= r3 else 2 if x <= r2 else 1)
-            rfm_df['F_rank'] = rfm_df['Frequency'].apply(lambda x: 5 if x >= f5 else 4 if x >= f4 else 3 if x >= f3 else 2 if x >= f2 else 1)
-            rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= m5 else 4 if x >= m4 else 3 if x >= m3 else 2 if x >= m2 else 1)
-            
-            # Convert ranks to str for concatenation
-            rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
-            rfm_df['F_rank'] = rfm_df['F_rank'].astype(str)
-            rfm_df['M_rank'] = rfm_df['M_rank'].astype(str)
-            
-            rfm_df['RFM_Score'] = rfm_df['R_rank'] + rfm_df['F_rank']
-            
-            # Assign categories based on R and F scores using regex
-            rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+            rfm_df = recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2)
             
             st.success('RFM segmentation updated!')
 
-        # Display the updated RFM dataframe
+        # Display the number of customers in each category
         st.markdown("### Number of Customers in Each Category")
         category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
         category_counts.columns = ['Category', 'Number of Customers']
@@ -303,16 +290,6 @@ try:
     
         # Display the updated RFM dataframe
         st.dataframe(rfm_df.head())
-    
-        # Scatter Plots
-        fig = px.scatter(filtered_category_df, x='Recency', y='Frequency', title='Scatter Recency vs Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig)
-
-        fig = px.scatter(filtered_category_df, x='Frequency', y='Monetary', title='Scatter Frequency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig)
-
-        fig = px.scatter(filtered_category_df, x='Recency', y='Monetary', title='Scatter Recency vs Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
-        st.plotly_chart(fig)
 
         fig = px.scatter_3d(filtered_category_df, x='Recency', y='Frequency', z='Monetary',
                             color='Category', 
@@ -391,45 +368,44 @@ try:
     
         st.plotly_chart(fig)
 
-        if selected_button == 'TO DO Analysis':
-            st.markdown("## Recommended Strategy")
-        
-            # Function to get recommendation from OpenAI
-            def get_recommendation():
-                openai.api_key = st.secrets["OPENAI_TOKEN"]
-                prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
-                          "data o nich jsou v části: about customers a about segmentation, "
-                          "navrhni vždy 5 klíčových doporučení.")
-                
-                try:
-                    response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
-                        messages=[
-                            {"role": "system", "content": "You are a helpful assistant."},
-                            {"role": "user", "content": prompt}
-                        ],
-                        max_tokens=150
-                    )
-                    return response.choices[0].message["content"].strip()
-                except Exception as e:
-                    st.error(f"Error with OpenAI request: {e}")
-                    return None
-        
+    if selected_button == 'TO DO Analysis':
+        st.markdown("## Recommended Strategy")
+    
+        # Function to get recommendation from OpenAI
+        def get_recommendation():
+            openai.api_key = st.secrets["OPENAI_TOKEN"]
+            prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
+                      "data o nich jsou v části: about customers a about segmentation, "
+                      "navrhni vždy 5 klíčových doporučení.")
+            
             try:
-                # Test if the secret key is correctly loaded
-                openai_token = st.secrets["OPENAI_TOKEN"]
-                st.write("OpenAI token loaded successfully.")
-                
-                recommendation = get_recommendation()
-                if recommendation:
-                    st.markdown(recommendation)
-                else:
-                    st.write("No recommendation received.")
-            except KeyError as e:
-                st.error(f"Error loading OpenAI token: {e}")
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=150
+                )
+                return response.choices[0].message["content"].strip()
             except Exception as e:
-                st.error(f"An error occurred: {e}")
-
+                st.error(f"Error with OpenAI request: {e}")
+                return None
+    
+        try:
+            # Test if the secret key is correctly loaded
+            openai_token = st.secrets["OPENAI_TOKEN"]
+            st.write("OpenAI token loaded successfully.")
+            
+            recommendation = get_recommendation()
+            if recommendation:
+                st.markdown(recommendation)
+            else:
+                st.write("No recommendation received.")
+        except KeyError as e:
+            st.error(f"Error loading OpenAI token: {e}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
