@@ -226,14 +226,16 @@ try:
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
 
-    if selected_button == 'About Segmentation':
+        if selected_button == 'About Segmentation':
+
+
         # Customizing the display for "About Segmentation"
         fig1 = px.treemap(
             rfm_df, 
             path=['Category'], 
             values='Monetary', 
             color='Category', 
-            color_discrete_sequence=px.colors.qualitative.Pastel, 
+            color_discrete_sequence=px.colors.qualitative.Pastel,  # Ensuring same color scheme
             title='Customer Distribution by RFM Categories (Monetary)'
         )
     
@@ -263,6 +265,7 @@ try:
         fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
         fig2.data[0].customdata = category_counts[['Percentage']].values
         st.plotly_chart(fig2)
+
 
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
