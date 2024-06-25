@@ -244,8 +244,7 @@ try:
             values='Monetary', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel,  # Ensuring same color scheme
-            title='Customer Distribution by RFM Categories (Monetary)',
-            category_orders={'Category': category_order}
+            title='Customer Distribution by RFM Categories (Monetary)'
         )
     
         # Calculate percentage of total monetary value for each category
@@ -269,14 +268,11 @@ try:
             values='Number of Customers', 
             color='Category', 
             color_discrete_sequence=px.colors.qualitative.Pastel, 
-            title='Customer Distribution by RFM Categories (Customer Count)',
-            category_orders={'Category': category_order}
+            title='Customer Distribution by RFM Categories (Customer Count)'
         )
         fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
         fig2.data[0].customdata = category_counts[['Percentage']].values
         st.plotly_chart(fig2)
-
-
 
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
