@@ -76,7 +76,7 @@ try:
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
     # Calculate Average Order Size (AOS)
-    rfm_df['AOS'] = rfm_df['Monetary'] / rfm_df['Frequency']
+    rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if x['Frequency'] != 0 else 0, axis=1)
     
     # Assign R score
     rfm_df['R_rank'] = rfm_df['Recency'].apply(lambda x: 5 if x <= 3 else 4 if x <= 10 else 3 if x <= 25 else 2 if x <= 66 else 1)
@@ -96,6 +96,7 @@ try:
     
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+
 
 
     # Sort categories by numeric order
