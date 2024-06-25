@@ -395,24 +395,26 @@ try:
         except KeyError as e:
             st.error(f"Error loading OpenAI token: {e}")
     
-            # Function to get recommendation from OpenAI
+             Function to get recommendation from OpenAI
         def get_recommendation():
             openai.api_key = st.secrets["OPENAI_TOKEN"]
             prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
                       "data o nich jsou v části: about customers a about segmentation, "
                       "navrhni vždy 5 klíčových doporučení.")
-        
-            response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=prompt,
+            
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ],
                 max_tokens=150
             )
-            return response.choices[0].text.strip()
-    
+            return response.choices[0].message["content"].strip()
+        
+        # Example usage
         recommendation = get_recommendation()
         st.markdown(recommendation)
-
-
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
