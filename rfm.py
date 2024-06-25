@@ -66,10 +66,15 @@ try:
     }).reset_index()
     
     # Calculate Frequency as the average number of days between purchases
-    frequency_df = filtered_df.groupby('id')['date'].apply(lambda x: x.diff().mean().days if len(x) > 1 else pd.NA).reset_index().rename(columns={'date': 'Frequency'})
+    frequency_df = filtered_df.groupby('id').agg({
+        'date': lambda x: (x.max() - x.min()).days / (len(x) - 1) if len(x) > 1 else (max_date - x.max()).days
+    }).rename(columns={
+        'date': 'Frequency'
+    }).reset_index()
     
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
+
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
