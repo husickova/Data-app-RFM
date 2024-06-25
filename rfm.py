@@ -66,13 +66,13 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Calculate Frequency as number of purchases / number of days between first and last purchase
+    # Calculate Frequency as number of purchases / number of days between the first and last purchase
     frequency_df = filtered_df.groupby('id').agg({
         'date': lambda x: len(x) / ((x.max() - x.min()).days + 1) if len(x) > 1 else 1 / (max_date - x.max()).days
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
-
+    
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
@@ -85,13 +85,13 @@ try:
     # Assign F score based on the new methodology
     def calculate_f_rank(frequency):
         if pd.notna(frequency):
-            if frequency <= 13.6:
+            if frequency >= 1 / 13.6:
                 return 5
-            elif frequency <= 24.5:
+            elif frequency >= 1 / 24.5:
                 return 4
-            elif frequency <= 38.8:
+            elif frequency >= 1 / 38.8:
                 return 3
-            elif frequency <= 66.6:
+            elif frequency >= 1 / 66.6:
                 return 2
             else:
                 return 1
@@ -112,6 +112,7 @@ try:
     
     # Assign categories based on R and F scores using regex
     rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
+
 
     # Sort categories by numeric order
     category_order = [
