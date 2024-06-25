@@ -294,6 +294,12 @@ try:
             rfm_df['Category'] = rfm_df.apply(lambda x: assign_category(x['R_rank'], x['F_rank']), axis=1)
             
             st.success('RFM segmentation updated!')
+
+        # Display the updated RFM dataframe
+        st.markdown("### Number of Customers in Each Category")
+        category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
+        category_counts.columns = ['Category', 'Number of Customers']
+        st.dataframe(category_counts)
     
         # Display the updated RFM dataframe
         st.dataframe(rfm_df.head())
