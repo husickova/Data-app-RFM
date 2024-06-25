@@ -66,16 +66,15 @@ try:
         'value': 'Monetary'
     }).reset_index()
     
-    # Calculate Frequency as the average number of days between purchases
+    # Calculate Frequency as 1 / number of days between purchases
     frequency_df = filtered_df.groupby('id').agg({
-        'date': lambda x: (x.max() - x.min()).days / (len(x) - 1) if len(x) > 1 else (max_date - x.max()).days
+        'date': lambda x: 1 / ((x.max() - x.min()).days / (len(x) - 1)) if len(x) > 1 else 1 / (max_date - x.max()).days
     }).rename(columns={
         'date': 'Frequency'
     }).reset_index()
     
     # Merge the frequency calculation back into the RFM dataframe
     rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
-
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
@@ -86,13 +85,13 @@ try:
     # Assign F score based on the new methodology
     def calculate_f_rank(frequency):
         if pd.notna(frequency):
-            if frequency <= 13.6:
+            if frequency <= 1 / 13.6:
                 return 5
-            elif frequency <= 24.5:
+            elif frequency <= 1 / 24.5:
                 return 4
-            elif frequency <= 38.8:
+            elif frequency <= 1 / 38.8:
                 return 3
-            elif frequency <= 66.6:
+            elif frequency <= 1 / 66.6:
                 return 2
             else:
                 return 1
@@ -101,10 +100,8 @@ try:
     
     rfm_df['F_rank'] = rfm_df['Frequency'].apply(calculate_f_rank)
 
-
     # Assign M score based on AOS
     rfm_df['M_rank'] = rfm_df['AOS'].apply(lambda x: 5 if x >= 6841 else 4 if x >= 3079 else 3 if x >= 1573 else 2 if x >= 672 else 1)
-
 
     # Convert ranks to str for concatenation
     rfm_df['R_rank'] = rfm_df['R_rank'].astype(str)
