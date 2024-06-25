@@ -208,6 +208,10 @@ try:
         category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
         category_counts.columns = ['Category', 'Number of Customers']
     
+        # Calculate percentage of total customers for each category
+        total_customers = category_counts['Number of Customers'].sum()
+        category_counts['Percentage'] = (category_counts['Number of Customers'] / total_customers * 100).round(2).astype(str) + '%'
+    
         # Display the treemap with the number of customers in each category
         fig2 = px.treemap(
             category_counts, 
@@ -217,8 +221,10 @@ try:
             color_discrete_sequence=px.colors.qualitative.Pastel, 
             title='Customer Distribution by RFM Categories (Customer Count)'
         )
-
+        fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
+        fig2.data[0].customdata = category_counts[['Percentage']].values
         st.plotly_chart(fig2)
+
         
     if selected_button == 'RFM Tuning':
         with st.sidebar.expander("RFM Parameters", expanded=True):
