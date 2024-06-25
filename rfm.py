@@ -395,7 +395,7 @@ try:
         except KeyError as e:
             st.error(f"Error loading OpenAI token: {e}")
     
-            # Function to get recommendation from OpenAI
+        # Function to get recommendation from OpenAI
         def get_recommendation():
             openai.api_key = st.secrets["OPENAI_TOKEN"]
             prompt = ("Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
@@ -411,11 +411,10 @@ try:
                 max_tokens=150
             )
             return response.choices[0].message["content"].strip()
-        
-        # Example usage
-        recommendation = get_recommendation()
-        st.markdown(recommendation)
 
+# Example usage
+recommendation = get_recommendation()
+st.markdown(recommendation)
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
 except Exception as e:
