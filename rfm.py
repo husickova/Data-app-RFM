@@ -135,7 +135,7 @@ try:
         ("About Customers", "About Customers"),
         ("About Segmentation", "About Segmentation"),
         ("RFM Tuning", "RFM Tuning"),
-        ("Action Analysis", "TO DO Analysis"),
+        ("Recommended Strategy", "TO DO Analysis"),
     ]
 
     selected_button = None
