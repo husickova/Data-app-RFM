@@ -74,7 +74,7 @@ try:
     }).reset_index()
     
     # Merge the frequency calculation back into the RFM dataframe
-    rfm_df = rfm_df.drop(columns=['Frequency']).merge(frequency_df, on='id')
+    rfm_df = rfm_df.drop(columns=['Temp_Frequency']).merge(frequency_df, on='id')
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
