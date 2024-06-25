@@ -79,7 +79,6 @@ try:
     # Replace any infinite values resulting from division by very small numbers
     rfm_df['Frequency'].replace([float('inf'), -float('inf')], 1, inplace=True)
 
-
     
     # Calculate Average Order Size (AOS)
     rfm_df['AOS'] = rfm_df.apply(lambda x: x['Monetary'] / x['Frequency'] if pd.notna(x['Frequency']) and x['Frequency'] != 0 else 0, axis=1)
