@@ -55,13 +55,13 @@ def recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2):
     # Assign F score
     def calculate_f_rank(frequency):
         if pd.notna(frequency):
-            if frequency >= f5:
+            if frequency <= f5:
                 return 5
-            elif frequency >= f4:
+            elif frequency <= f4:
                 return 4
-            elif frequency >= f3:
+            elif frequency <= f3:
                 return 3
-            elif frequency >= f2:
+            elif frequency <= f2:
                 return 2
             else:
                 return 1
