@@ -183,6 +183,8 @@ try:
     filtered_category_df = rfm_df
 
     if selected_button == 'About Customers':
+        # Add 'Category' column to filtered_df
+        filtered_df = filtered_df.merge(rfm_df[['id', 'Category']], on='id', how='left')
     
         # Monthly revenue over time with stacked bar plot by category
         monthly_revenue = filtered_df.set_index('date').resample('M')['value'].sum().reset_index()
@@ -213,14 +215,17 @@ try:
     
         fig2 = px.box(filtered_category_df, y='Recency', title='Boxplot Recency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
+        st.markdown("<p style='font-size: small;'>Recency shows how recently each customer made a purchase.</p>", unsafe_allow_html=True)
     
         fig2 = px.box(filtered_category_df, y='Frequency', title='Boxplot Frequency', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
+        st.markdown("<p style='font-size: small;'>Frequency shows how often each customer makes a purchase.</p>", unsafe_allow_html=True)
     
         # Filter out extreme values
         filtered_monetary_df = filtered_category_df[filtered_category_df['Monetary'] <= filtered_category_df['Monetary'].quantile(0.95)]
         fig2 = px.box(filtered_monetary_df, y='Monetary', title='Boxplot Monetary', color='Category', category_orders={'Category': category_order}, color_discrete_sequence=px.colors.qualitative.Pastel)
         st.plotly_chart(fig2)
+        st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
 
     if selected_button == 'About Segmentation':
 
