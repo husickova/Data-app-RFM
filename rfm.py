@@ -394,27 +394,35 @@ try:
                           "data o nich jsou v části: about customers a about segmentation, "
                           "navrhni vždy 5 klíčových doporučení.")
                 
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    max_tokens=150
-                )
-                return response.choices[0].message["content"].strip()
+                try:
+                    response = openai.ChatCompletion.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": "You are a helpful assistant."},
+                            {"role": "user", "content": prompt}
+                        ],
+                        max_tokens=150
+                    )
+                    return response.choices[0].message["content"].strip()
+                except Exception as e:
+                    st.error(f"Error with OpenAI request: {e}")
+                    return None
         
             try:
                 # Test if the secret key is correctly loaded
                 openai_token = st.secrets["OPENAI_TOKEN"]
                 st.write("OpenAI token loaded successfully.")
-            
+                
                 recommendation = get_recommendation()
-                st.markdown(recommendation)
+                if recommendation:
+                    st.markdown(recommendation)
+                else:
+                    st.write("No recommendation received.")
             except KeyError as e:
                 st.error(f"Error loading OpenAI token: {e}")
             except Exception as e:
-                st.error(f"An error occurred while loading the file: {e}")
+                st.error(f"An error occurred: {e}")
+
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
