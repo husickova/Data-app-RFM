@@ -237,44 +237,44 @@ try:
         st.markdown("<p style='font-size: small;'>Monetary shows how much money each customer spends.</p>", unsafe_allow_html=True)
     
    if selected_button == 'About Segmentation':
-    # Customizing the display for "About Segmentation"
-    fig1 = px.treemap(
-        rfm_df, 
-        path=['Category'], 
-        values='Monetary', 
-        color='Category', 
-        color_discrete_sequence=px.colors.qualitative.Pastel,  # Ensuring same color scheme
-        title='Customer Distribution by RFM Categories (Monetary)',
-        category_orders={'Category': category_order}
-    )
-
-    # Calculate percentage of total monetary value for each category
-    category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
-    category_percentage = category_percentage.round(2).astype(str) + '%'
-    fig1.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig1.data[0].ids].values
-    st.plotly_chart(fig1)
+        # Customizing the display for "About Segmentation"
+        fig1 = px.treemap(
+            rfm_df, 
+            path=['Category'], 
+            values='Monetary', 
+            color='Category', 
+            color_discrete_sequence=px.colors.qualitative.Pastel,  # Ensuring same color scheme
+            title='Customer Distribution by RFM Categories (Monetary)',
+            category_orders={'Category': category_order}
+        )
     
-    # Calculate the number of customers in each category
-    category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
-    category_counts.columns = ['Category', 'Number of Customers']
-
-    # Calculate percentage of total customers for each category
-    total_customers = category_counts['Number of Customers'].sum()
-    category_counts['Percentage'] = (category_counts['Number of Customers'] / total_customers * 100).round(2).astype(str) + '%'
-
-    # Display the treemap with the number of customers in each category
-    fig2 = px.treemap(
-        category_counts, 
-        path=['Category'], 
-        values='Number of Customers', 
-        color='Category', 
-        color_discrete_sequence=px.colors.qualitative.Pastel, 
-        title='Customer Distribution by RFM Categories (Customer Count)',
-        category_orders={'Category': category_order}
-    )
-    fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
-    fig2.data[0].customdata = category_counts[['Percentage']].values
-    st.plotly_chart(fig2)
+        # Calculate percentage of total monetary value for each category
+        category_percentage = rfm_df.groupby('Category')['Monetary'].sum() / rfm_df['Monetary'].sum() * 100
+        category_percentage = category_percentage.round(2).astype(str) + '%'
+        fig1.data[0].texttemplate = "%{label}<br>%{value}<br>" + category_percentage[fig1.data[0].ids].values
+        st.plotly_chart(fig1)
+        
+        # Calculate the number of customers in each category
+        category_counts = rfm_df['Category'].value_counts().reindex(category_order).reset_index()
+        category_counts.columns = ['Category', 'Number of Customers']
+    
+        # Calculate percentage of total customers for each category
+        total_customers = category_counts['Number of Customers'].sum()
+        category_counts['Percentage'] = (category_counts['Number of Customers'] / total_customers * 100).round(2).astype(str) + '%'
+    
+        # Display the treemap with the number of customers in each category
+        fig2 = px.treemap(
+            category_counts, 
+            path=['Category'], 
+            values='Number of Customers', 
+            color='Category', 
+            color_discrete_sequence=px.colors.qualitative.Pastel, 
+            title='Customer Distribution by RFM Categories (Customer Count)',
+            category_orders={'Category': category_order}
+        )
+        fig2.data[0].texttemplate = "%{label}<br>%{value}<br>%{customdata[0]}<br>"
+        fig2.data[0].customdata = category_counts[['Percentage']].values
+        st.plotly_chart(fig2)
 
 
 
