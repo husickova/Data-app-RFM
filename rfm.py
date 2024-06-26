@@ -584,7 +584,8 @@ try:
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
                     ],
-                    max_tokens=150,
+                    max_tokens=1000,  # Increase the number of max tokens
+                    temperature=0.7,  # Adjust the temperature for more creative responses
                 )
                 # Kontrola struktury odpovědi
                 if 'choices' in response and len(response['choices']) > 0:
@@ -607,7 +608,7 @@ try:
                 return None
     
         def test_openai_api():
-            prompt = "Say this is a test."
+            prompt = "This isn't a test"
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo-16k",
@@ -615,7 +616,7 @@ try:
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
                     ],
-                    max_tokens=5
+                    max_tokens=50
                 )
                 if 'choices' in response and len(response['choices']) > 0:
                     return response['choices'][0]['message']['content'].strip()
@@ -645,7 +646,6 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
-
 
 
 
