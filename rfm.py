@@ -541,7 +541,7 @@ try:
                 return None
     
             # Convert the filtered data frame to a CSV string
-            filtered_data_str = filtered_category_df.head(2000).to_csv(index=False)  # Send only first 2000 rows
+            filtered_data_str = filtered_category_df.head(1000).to_csv(index=False)  # Send only first 1000 rows
     
             prompt = (
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
@@ -573,7 +573,7 @@ try:
     
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4",
+                    model="gpt-3.5-turbo-16k",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
@@ -605,7 +605,7 @@ try:
             prompt = "This isn't a test"
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4",
+                    model="gpt-3.5-turbo-16k",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
