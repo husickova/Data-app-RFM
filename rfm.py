@@ -586,7 +586,12 @@ try:
                     ],
                     max_tokens=150,
                 )
-                return response.choices[0].message["content"].strip()
+                # Kontrola struktury odpovědi
+                if 'choices' in response and len(response['choices']) > 0:
+                    return response['choices'][0]['message']['content'].strip()
+                else:
+                    st.error("Unexpected API response structure")
+                    return None
             except openai.error.RateLimitError:
                 st.error(
                     "You have exceeded your OpenAI API quota. Please check your plan and billing details."
@@ -615,7 +620,11 @@ try:
                     ],
                     max_tokens=5
                 )
-                return response.choices[0].message["content"].strip()
+                if 'choices' in response and len(response['choices']) > 0:
+                    return response['choices'][0]['message']['content'].strip()
+                else:
+                    st.error("Unexpected API response structure")
+                    return None
             except Exception as e:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
