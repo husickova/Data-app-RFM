@@ -544,7 +544,7 @@ try:
             filtered_data_str = filtered_category_df.head(100).to_csv(index=False)  # Send only first 100 rows
     
             prompt = (
-                f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
+                f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. You are data analyst with perfect business feeling. "
                 f"Analyze each segment individually, following this specific category order and structure:\n\n"
                 
                 f"Champions:\n"
