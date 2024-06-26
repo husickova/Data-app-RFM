@@ -596,7 +596,43 @@ try:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
     
+        def get_account_status():
+            try:
+                response = openai.api_request(
+                    method='GET',
+                    path='/v1/account',
+                )
+                return response
+            except Exception as e:
+                st.error(f"Error getting account status: {e}")
+                return None
+    
+        def test_openai_api():
+            prompt = "Say this is a test."
+            try:
+                response = openai.Completion.create(
+                    engine="davinci",
+                    prompt=prompt,
+                    max_tokens=5
+                )
+                return response.choices[0].text.strip()
+            except Exception as e:
+                st.error(f"Error with OpenAI request: {e}")
+                return None
+    
         try:
+            account_status = get_account_status()
+            if account_status:
+                st.write(account_status)
+            else:
+                st.write("Unable to retrieve account status.")
+            
+            test_response = test_openai_api()
+            if test_response:
+                st.write(f"Test response from OpenAI: {test_response}")
+            else:
+                st.write("No response received from test OpenAI API call.")
+    
             recommendation = get_recommendation()
             if recommendation:
                 st.markdown(recommendation)
@@ -609,6 +645,7 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
+
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
