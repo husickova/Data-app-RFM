@@ -598,10 +598,7 @@ try:
     
         def get_account_status():
             try:
-                response = openai.api_request(
-                    method='GET',
-                    path='/v1/account',
-                )
+                response = openai.Engine.list()
                 return response
             except Exception as e:
                 st.error(f"Error getting account status: {e}")
@@ -610,12 +607,15 @@ try:
         def test_openai_api():
             prompt = "Say this is a test."
             try:
-                response = openai.Completion.create(
-                    engine="davinci",
-                    prompt=prompt,
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": prompt},
+                    ],
                     max_tokens=5
                 )
-                return response.choices[0].text.strip()
+                return response.choices[0].message["content"].strip()
             except Exception as e:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
@@ -645,6 +645,7 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
+
 
 
 except FileNotFoundError:
