@@ -547,74 +547,78 @@ try:
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
                 f"Analyze each segment individually, following this specific category order and structure:\n\n"
                 
-                f"**Champions:**\n"
+                f"Champions:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Champions to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Champions.\n\n"
                 
-                f"**Loyal Customers:**\n"
+                f"Loyal Customers:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Loyal Customers to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Loyal Customers.\n\n"
                 
-                f"**Potential Loyalists:**\n"
+                f"Potential Loyalists:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Potential Loyalists to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Potential Loyalists.\n\n"
                 
-                f"**Recent Customers:**\n"
+                f"Recent Customers:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Recent Customers to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Recent Customers.\n\n"
                 
-                f"**Promising:**\n"
+                f"Promising:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Promising customers to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Promising customers.\n\n"
                 
-                f"**Need Attention:**\n"
+                f"Need Attention:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of customers who Need Attention to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with customers who Need Attention.\n\n"
                 
-                f"**About to Sleep:**\n"
+                f"About to Sleep:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of customers who are About to Sleep to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with customers who are About to Sleep.\n\n"
                 
-                f"**Can't Lose:**\n"
+                f"Can't Lose:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of customers who Can't Lose to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with customers who Can't Lose.\n\n"
                 
-                f"**At Risk:**\n"
+                f"At Risk:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of customers who are At Risk to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with customers who are At Risk.\n\n"
                 
-                f"**Hibernating:**\n"
+                f"Hibernating:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Hibernating customers to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Hibernating customers.\n\n"
                 
-                f"**Lost:**\n"
+                f"Lost:\n"
                 f"Customer Value:\n"
                 f"    Compare the value of Lost customers to other groups.\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Lost customers.\n\n"
-                
+
+                f"! Make all names of Category bold\n"
+                f"! Make all names like customer value and engagement recommendations bold\n"
+
                 f"Here is the data:\n{filtered_data_str}"
             )
+
 
 
     
