@@ -541,7 +541,7 @@ try:
                 return None
     
             # Convert the filtered data frame to a CSV string
-            filtered_data_str = filtered_category_df.head(100).to_csv(index=False)  # Send only first 100 rows
+            filtered_data_str = filtered_category_df.head(2000).to_csv(index=False)  # Send only first 2000 rows
     
             prompt = (
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
