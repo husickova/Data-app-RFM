@@ -547,9 +547,9 @@ try:
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
                 f"Analyze each segment individually, following this specific category order and structure:\n\n"
                 
-                f"Champions: (make names of category bold)\n"
-                f"Customer Value: 1 key sentence about this category business (put it a new line)\n"
-                f"Engagement Recommendations: (put it a new line)\n"
+                f"Champions: (make names of category font bold)\n"
+                f"Customer Value: 1 key sentence about this category business (put it a new line for better comprehension)\n"
+                f"Engagement Recommendations: (put it a new line for better comprehension)\n"
                 f"    Provide 2 key recommendations on how to engage with Champions.\n\n"
                 
                 f"Loyal Customers:\n"
