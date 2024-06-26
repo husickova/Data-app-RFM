@@ -535,7 +535,7 @@ try:
         def get_recommendation():
             try:
                 openai.api_key = st.secrets["OPENAI_TOKEN"]
-                st.write(f"Loaded OpenAI token: {openai.api_key[:4]}...")  # Display part of the token for verification
+                st.write("OpenAI token loaded successfully.")
             except KeyError as e:
                 st.error(f"Error loading OpenAI token: {e}")
                 return None
@@ -597,16 +597,13 @@ try:
                     "You have exceeded your OpenAI API quota. Please check your plan and billing details."
                 )
                 return None
+            except openai.error.PermissionError:
+                st.error(
+                    "You have insufficient permissions for this operation. Please check your API key permissions."
+                )
+                return None
             except Exception as e:
                 st.error(f"Error with OpenAI request: {e}")
-                return None
-    
-        def get_account_status():
-            try:
-                response = openai.Engine.list()
-                return response
-            except Exception as e:
-                st.error(f"Error getting account status: {e}")
                 return None
     
         def test_openai_api():
@@ -630,12 +627,6 @@ try:
                 return None
     
         try:
-            account_status = get_account_status()
-            if account_status:
-                st.write(account_status)
-            else:
-                st.write("Unable to retrieve account status.")
-            
             test_response = test_openai_api()
             if test_response:
                 st.write(f"Test response from OpenAI: {test_response}")
@@ -654,7 +645,6 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
-
 
 
 
