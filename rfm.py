@@ -609,3 +609,8 @@ try:
     except Exception as e:
         st.error(f"An error occurred: {e}")
         st.write("This feature is temporarily unavailable due to API quota limits.")
+
+except FileNotFoundError:
+    st.error(f"File not found at path {csv_path}.")
+except Exception as e:
+    st.error(f"An error occurred while loading the file: {e}")
