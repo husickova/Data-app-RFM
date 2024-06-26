@@ -528,7 +528,7 @@ try:
 
         st.plotly_chart(fig)
 
-        if selected_button == "TO DO Analysis":
+    if selected_button == "TO DO Analysis":
         st.markdown("## Recommended Strategy")
     
         # Function to get recommendation from OpenAI
