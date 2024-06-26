@@ -581,10 +581,10 @@ try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo-16k",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": "You are a data analyst."},
                         {"role": "user", "content": prompt},
                     ],
-                    max_tokens=1000,  # Increase the number of max tokens
+                    max_tokens=2000,  # Increase the number of max tokens
                     temperature=0.7,  # Adjust the temperature for more creative responses
                 )
                 # Kontrola struktury odpovědi
@@ -606,47 +606,6 @@ try:
             except Exception as e:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
-    
-        def test_openai_api():
-            prompt = "This isn't a test"
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo-16k",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": prompt},
-                    ],
-                    max_tokens=50
-                )
-                if 'choices' in response and len(response['choices']) > 0:
-                    return response['choices'][0]['message']['content'].strip()
-                else:
-                    st.error("Unexpected API response structure")
-                    return None
-            except Exception as e:
-                st.error(f"Error with OpenAI request: {e}")
-                return None
-    
-        try:
-            test_response = test_openai_api()
-            if test_response:
-                st.write(f"Test response from OpenAI: {test_response}")
-            else:
-                st.write("No response received from test OpenAI API call.")
-    
-            recommendation = get_recommendation()
-            if recommendation:
-                st.markdown(recommendation)
-            else:
-                st.write(
-                    "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
-                )
-        except KeyError as e:
-            st.error(f"Error loading OpenAI token: {e}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-            st.write("This feature is temporarily unavailable due to API quota limits.")
-
 
 
 except FileNotFoundError:
