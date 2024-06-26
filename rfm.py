@@ -532,16 +532,13 @@ try:
         st.markdown("## Recommended Strategy")
     
         # Function to get recommendation from OpenAI
-        def get_recommendation():
+        def get_recommendation(data_chunk):
             try:
                 openai.api_key = st.secrets["OPENAI_TOKEN"]
                 st.write("OpenAI token loaded successfully.")
             except KeyError as e:
                 st.error(f"Error loading OpenAI token: {e}")
                 return None
-    
-            # Convert the filtered data frame to a CSV string
-            filtered_data_str = filtered_category_df.head(1000).to_csv(index=False)  # Send only first 1000 rows
     
             prompt = (
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
@@ -557,7 +554,7 @@ try:
                 f"    a. Provide 2 key recommendations on how to engage with each customer group.\n"
                 f"    b. Ensure the recommendations are actionable and data-driven.\n"
                 f"    c. Discuss how engagement strategies should differ between groups.\n\n"
-                f"Here is the data:\n{filtered_data_str}"
+                f"Here is the data:\n{data_chunk}"
             )
     
             try:
@@ -610,6 +607,21 @@ try:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
     
+        def split_data_and_get_recommendations():
+            # Split data into chunks to avoid token limit
+            chunk_size = 1000  # Number of rows per chunk
+            chunks = [filtered_category_df[i:i + chunk_size] for i in range(0, filtered_category_df.shape[0], chunk_size)]
+    
+            recommendations = []
+    
+            for chunk in chunks:
+                data_chunk = chunk.to_csv(index=False)
+                recommendation = get_recommendation(data_chunk)
+                if recommendation:
+                    recommendations.append(recommendation)
+    
+            return "\n\n".join(recommendations)
+    
         try:
             test_response = test_openai_api()
             if test_response:
@@ -617,9 +629,9 @@ try:
             else:
                 st.write("No response received from test OpenAI API call.")
     
-            recommendation = get_recommendation()
-            if recommendation:
-                st.markdown(recommendation)
+            recommendations = split_data_and_get_recommendations()
+            if recommendations:
+                st.markdown(recommendations)
             else:
                 st.write(
                     "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
@@ -629,6 +641,7 @@ try:
         except Exception as e:
             st.error(f"An error occurred: {e}")
             st.write("This feature is temporarily unavailable due to API quota limits.")
+
 
 
 except FileNotFoundError:
