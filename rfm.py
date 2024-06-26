@@ -546,11 +546,6 @@ try:
             prompt = (
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
                 f"Analyze all segments together, highlighting the differences and similarities among them. Group segments with similar patterns and provide a combined analysis. Follow this detailed structure:\n\n"
-                f"1. Segment Overview:\n"
-                f"    a. Provide an overall description of the groups of segments with similar patterns.\n"
-                f"    b. Highlight differences and similarities among the groups.\n\n"
-                f"2. Customer Behavior:\n"
-                f"    a. Summarize the typical behavior of customers across all groups in 3 sentences.\n\n"
                 f"3. Purchasing Patterns:\n"
                 f"    a. Highlight any notable patterns or trends in purchasing behavior within each group.\n"
                 f"    b. Discuss how purchasing patterns vary between groups.\n\n"
@@ -562,12 +557,6 @@ try:
                 f"    a. Provide 2 key recommendations on how to engage with each customer group.\n"
                 f"    b. Ensure the recommendations are actionable and data-driven.\n"
                 f"    c. Discuss how engagement strategies should differ between groups.\n\n"
-                f"To ensure the analysis is thorough and accurate, perform the following evaluation (eval) steps for each task:\n"
-                f"    - Eval 1: Verify the accuracy of the data described in the segment overview.\n"
-                f"    - Eval 2: Cross-check the customer behavior analysis with the provided data.\n"
-                f"    - Eval 3: Ensure the purchasing patterns are correctly identified and described.\n"
-                f"    - Eval 4: Confirm the customer value metrics are accurately calculated and compared.\n"
-                f"    - Eval 5: Assess the feasibility and relevance of the engagement recommendations.\n\n"
                 f"Here is the data:\n{filtered_data_str}"
             )
     
