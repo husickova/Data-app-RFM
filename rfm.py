@@ -605,8 +605,8 @@ try:
                     "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
                 )
                 
-    except KeyError as e:
-        st.error(f"Error loading OpenAI token: {e}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        st.write("This feature is temporarily unavailable due to API quota limits.")
+except KeyError as e:
+    st.error(f"Error loading OpenAI token: {e}")
+except Exception as e:
+    st.error(f"An error occurred: {e}")
+    st.write("This feature is temporarily unavailable due to API quota limits.")
