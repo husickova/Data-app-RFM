@@ -528,120 +528,118 @@ try:
 
         st.plotly_chart(fig)
 
-    if selected_button == "TO DO Analysis":
-        st.markdown("## Recommended Strategy")
-    
-        # Function to get recommendation from OpenAI
-        def get_recommendation():
-            try:
-                openai.api_key = st.secrets["OPENAI_TOKEN"]
-                st.write("OpenAI token loaded successfully.")
-            except KeyError as e:
-                st.error(f"Error loading OpenAI token: {e}")
-                return None
-    
-            # Convert the filtered data frame to a CSV string
-            filtered_data_str = filtered_category_df.head(2000).to_csv(index=False)  # Send only first 2000 rows
-    
-            prompt = (
-                f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
-                f"Analyze all segments together, highlighting the differences and similarities among them. Group segments with similar patterns and provide a combined analysis. Follow this detailed structure:\n\n"
-                f"1. Segment Overview:\n"
-                f"    a. Provide an overall description of the groups of segments with similar patterns.\n"
-                f"    b. Highlight differences and similarities among the groups.\n\n"
-                f"2. Customer Behavior:\n"
-                f"    a. Summarize the typical behavior of customers across all groups in 3 sentences.\n\n"
-                f"3. Purchasing Patterns:\n"
-                f"    a. Highlight any notable patterns or trends in purchasing behavior within each group.\n"
-                f"    b. Discuss how purchasing patterns vary between groups.\n\n"
-                f"4. Customer Value:\n"
-                f"    a. Discuss the overall value these customers bring to the business.\n"
-                f"    b. Compare the value of different groups to each other.\n"
-                f"    c. Identify which groups are the most and least valuable.\n\n"
-                f"5. Engagement Recommendations:\n"
-                f"    a. Provide 2 key recommendations on how to engage with each customer group.\n"
-                f"    b. Ensure the recommendations are actionable and data-driven.\n"
-                f"    c. Discuss how engagement strategies should differ between groups.\n\n"
-                f"To ensure the analysis is thorough and accurate, perform the following evaluation (eval) steps for each task:\n"
-                f"    - Eval 1: Verify the accuracy of the data described in the segment overview.\n"
-                f"    - Eval 2: Cross-check the customer behavior analysis with the provided data.\n"
-                f"    - Eval 3: Ensure the purchasing patterns are correctly identified and described.\n"
-                f"    - Eval 4: Confirm the customer value metrics are accurately calculated and compared.\n"
-                f"    - Eval 5: Assess the feasibility and relevance of the engagement recommendations.\n\n"
-                f"Here is the data:\n{filtered_data_str}"
-            )
+if selected_button == "TO DO Analysis":
+    st.markdown("## Recommended Strategy")
 
-    
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo-16k",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": prompt},
-                    ],
-                    max_tokens=1000,  # Increase the number of max tokens
-                    temperature=0.7,  # Adjust the temperature for more creative responses
-                )
-                # Kontrola struktury odpovědi
-                if 'choices' in response and len(response['choices']) > 0:
-                    return response['choices'][0]['message']['content'].strip()
-                else:
-                    st.error("Unexpected API response structure")
-                    return None
-            except openai.error.RateLimitError:
-                st.error(
-                    "You have exceeded your OpenAI API quota. Please check your plan and billing details."
-                )
-                return None
-            except openai.error.PermissionError:
-                st.error(
-                    "You have insufficient permissions for this operation. Please check your API key permissions."
-                )
-                return None
-            except Exception as e:
-                st.error(f"Error with OpenAI request: {e}")
-                return None
-    
-        def test_openai_api():
-            prompt = "This isn't a test"
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo-16k",
-                    messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
-                        {"role": "user", "content": prompt},
-                    ],
-                    max_tokens=50
-                )
-                if 'choices' in response and len(response['choices']) > 0:
-                    return response['choices'][0]['message']['content'].strip()
-                else:
-                    st.error("Unexpected API response structure")
-                    return None
-            except Exception as e:
-                st.error(f"Error with OpenAI request: {e}")
-                return None
-    
+    # Function to get recommendation from OpenAI
+    def get_recommendation():
         try:
-            test_response = test_openai_api()
-            if test_response:
-                st.write(f"Test response from OpenAI: {test_response}")
-            else:
-                st.write("No response received from test OpenAI API call.")
-    
-            recommendation = get_recommendation()
-            if recommendation:
-                st.markdown(recommendation)
-            else:
-                st.write(
-                    "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
-                )
+            openai.api_key = st.secrets["OPENAI_TOKEN"]
+            st.write("OpenAI token loaded successfully.")
         except KeyError as e:
             st.error(f"Error loading OpenAI token: {e}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-            st.write("This feature is temporarily unavailable due to API quota limits.")
+            return None
 
+        # Convert the filtered data frame to a CSV string
+        filtered_data_str = filtered_category_df.head(2000).to_csv(index=False)  # Send only first 2000 rows
+
+        prompt = (
+            f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
+            f"Analyze all segments together, highlighting the differences and similarities among them. Group segments with similar patterns and provide a combined analysis. Follow this detailed structure:\n\n"
+            f"1. Segment Overview:\n"
+            f"    a. Provide an overall description of the groups of segments with similar patterns.\n"
+            f"    b. Highlight differences and similarities among the groups.\n\n"
+            f"2. Customer Behavior:\n"
+            f"    a. Summarize the typical behavior of customers across all groups in 3 sentences.\n\n"
+            f"3. Purchasing Patterns:\n"
+            f"    a. Highlight any notable patterns or trends in purchasing behavior within each group.\n"
+            f"    b. Discuss how purchasing patterns vary between groups.\n\n"
+            f"4. Customer Value:\n"
+            f"    a. Discuss the overall value these customers bring to the business.\n"
+            f"    b. Compare the value of different groups to each other.\n"
+            f"    c. Identify which groups are the most and least valuable.\n\n"
+            f"5. Engagement Recommendations:\n"
+            f"    a. Provide 2 key recommendations on how to engage with each customer group.\n"
+            f"    b. Ensure the recommendations are actionable and data-driven.\n"
+            f"    c. Discuss how engagement strategies should differ between groups.\n\n"
+            f"To ensure the analysis is thorough and accurate, perform the following evaluation (eval) steps for each task:\n"
+            f"    - Eval 1: Verify the accuracy of the data described in the segment overview.\n"
+            f"    - Eval 2: Cross-check the customer behavior analysis with the provided data.\n"
+            f"    - Eval 3: Ensure the purchasing patterns are correctly identified and described.\n"
+            f"    - Eval 4: Confirm the customer value metrics are accurately calculated and compared.\n"
+            f"    - Eval 5: Assess the feasibility and relevance of the engagement recommendations.\n\n"
+            f"Here is the data:\n{filtered_data_str}"
+        )
+
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4-32k",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=1000,  # Increase the number of max tokens
+                temperature=0.7,  # Adjust the temperature for more creative responses
+            )
+            # Kontrola struktury odpovědi
+            if 'choices' in response and len(response['choices']) > 0:
+                return response['choices'][0]['message']['content'].strip()
+            else:
+                st.error("Unexpected API response structure")
+                return None
+        except openai.error.RateLimitError:
+            st.error(
+                "You have exceeded your OpenAI API quota. Please check your plan and billing details."
+            )
+            return None
+        except openai.error.PermissionError:
+            st.error(
+                "You have insufficient permissions for this operation. Please check your API key permissions."
+            )
+            return None
+        except Exception as e:
+            st.error(f"Error with OpenAI request: {e}")
+            return None
+
+    def test_openai_api():
+        prompt = "This isn't a test"
+        try:
+            response = openai.ChatCompletion.create(
+                model="gpt-4-32k",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=50
+            )
+            if 'choices' in response and len(response['choices']) > 0:
+                return response['choices'][0]['message']['content'].strip()
+            else:
+                st.error("Unexpected API response structure")
+                return None
+        except Exception as e:
+            st.error(f"Error with OpenAI request: {e}")
+            return None
+
+    try:
+        test_response = test_openai_api()
+        if test_response:
+            st.write(f"Test response from OpenAI: {test_response}")
+        else:
+            st.write("No response received from test OpenAI API call.")
+
+        recommendation = get_recommendation()
+        if recommendation:
+            st.markdown(recommendation)
+        else:
+            st.write(
+                "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
+            )
+    except KeyError as e:
+        st.error(f"Error loading OpenAI token: {e}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        st.write("This feature is temporarily unavailable due to API quota limits.")
 
 
 except FileNotFoundError:
