@@ -14,34 +14,24 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-# Function to assign categories based on R and F scores using regex
 def assign_category(r, f):
-    rfm_score = f"{r}{f}"
-    if re.match(r"5[4-5]", rfm_score):
-        return "01. Champions"
-    elif re.match(r"[3-4][4-5]", rfm_score):
-        return "02. Loyal Customers"
-    elif re.match(r"[4-5][2-3]", rfm_score):
-        return "03. Potential Loyalists"
-    elif re.match(r"51", rfm_score):
-        return "04. Recent Customers"
-    elif re.match(r"41", rfm_score):
-        return "05. Promising"
-    elif re.match(r"33", rfm_score):
-        return "06. Need Attention"
-    elif re.match(r"3[1-2]", rfm_score):
-        return "07. About to Sleep"
-    elif re.match(r"[1-2][5]", rfm_score):
-        return "08. Can't Lose"
-    elif re.match(r"[1-2][3-4]", rfm_score):
-        return "09. At Risk"
-    elif re.match(r"2[1-2]", rfm_score):
-        return "10. Hibernating"
-    elif re.match(r"1[1-2]", rfm_score):
-        return "11. Lost"
-    else:
-        return "Uncategorized"
+    categories = {
+        "5[4-5]": "01. Champions",
+        "[3-4][4-5]": "02. Loyal Customers",
+        "[4-5][2-3]": "03. Potential Loyalists",
+        "51": "04. Recent Customers",
+        "41": "05. Promising",
+        "33": "06. Need Attention",
+        "3[1-2]": "07. About to Sleep",
+        "[1-2][5]": "08. Can't Lose",
+        "[1-2][3-4]": "09. At Risk",
+        "2[1-2]": "10. Hibernating",
+        "1[1-2]": "11. Lost"
+    }
+    for pattern, category in categories.items():
+        if re.match(pattern, f"{r}{f}"):
+            return category
+    return "Uncategorized"
 
 
 # Definice category_order
@@ -70,20 +60,12 @@ def recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2):
     )
 
     # Assign F score
-    def calculate_f_rank(frequency):
-        if pd.notna(frequency):
-            if frequency <= f5:
-                return 5
-            elif frequency <= f4:
-                return 4
-            elif frequency <= f3:
-                return 3
-            elif frequency <= f2:
-                return 2
-            else:
-                return 1
-        else:
-            return 1
+    def calculate_f_rank(frequency, thresholds):
+    if pd.notna(frequency):
+        for i, threshold in enumerate(thresholds, start=1):
+            if frequency <= threshold:
+                return 6 - i
+    return 1
 
     rfm_df["F_rank"] = rfm_df["Frequency"].apply(calculate_f_rank)
 
