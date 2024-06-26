@@ -408,10 +408,44 @@ try:
             # Convert the filtered data frame to a CSV string
             filtered_data_str = filtered_category_df.to_csv(index=False)
             
-            prompt = (f"Jaké jsou tvoje doporučení jak pracovat s těmito zákazníky na základě RFM analýzy, "
-                      f"data o nich jsou v části: about customers a about segmentation, "
-                      f"navrhni vždy 5 klíčových doporučení.\n\n"
-                      f"Data:\n{filtered_data_str}")
+            prompt = (f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
+                      f"The data includes customer information categorized by RFM segments. Analyze all segments together, highlighting the differences and similarities among them. Group segments with similar patterns and provide a combined analysis. Follow this detailed structure:\n\n"
+            
+                      f"1. Segment Overview:\n"
+                      f"    a. Provide an overall description of the groups of segments with similar patterns.\n"
+                      f"    b. Include the number of customers in each group.\n"
+                      f"    c. Mention key metrics such as Recency, Frequency, and Monetary values for each group.\n"
+                      f"    d. Highlight differences and similarities among the groups based on these metrics.\n\n"
+            
+                      f"2. Customer Behavior:\n"
+                      f"    a. Analyze the typical behavior of customers in each group.\n"
+                      f"    b. Provide insights based on the data provided.\n"
+                      f"    c. Compare and contrast the behavior of customers across different groups.\n\n"
+            
+                      f"3. Purchasing Patterns:\n"
+                      f"    a. Highlight any notable patterns or trends in purchasing behavior within each group.\n"
+                      f"    b. Identify any seasonal or recurring trends.\n"
+                      f"    c. Discuss how purchasing patterns vary between groups.\n\n"
+            
+                      f"4. Customer Value:\n"
+                      f"    a. Discuss the overall value these customers bring to the business.\n"
+                      f"    b. Include metrics such as average order size and total revenue contribution for each group.\n"
+                      f"    c. Compare the value of different groups to each other.\n"
+                      f"    d. Identify which groups are the most and least valuable.\n\n"
+            
+                      f"5. Engagement Recommendations:\n"
+                      f"    a. Provide 2 key recommendations on how to engage with each customer group.\n"
+                      f"    b. Ensure the recommendations are actionable and data-driven.\n"
+                      f"    c. Discuss how engagement strategies should differ between groups.\n\n"
+            
+                      f"To ensure the analysis is thorough and accurate, perform the following evaluation (eval) steps for each task:\n"
+                      f"    - Eval 1: Verify the accuracy of the data described in the segment overview.\n"
+                      f"    - Eval 2: Cross-check the customer behavior analysis with the provided data.\n"
+                      f"    - Eval 3: Ensure the purchasing patterns are correctly identified and described.\n"
+                      f"    - Eval 4: Confirm the customer value metrics are accurately calculated and compared.\n"
+                      f"    - Eval 5: Assess the feasibility and relevance of the engagement recommendations.\n\n"
+            
+                      f"Here is the data:\n{filtered_data_str}")
     
             try:
                 response = openai.ChatCompletion.create(
