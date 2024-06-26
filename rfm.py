@@ -59,8 +59,8 @@ def recalculate_rfm(rfm_df, r5, r4, r3, r2, f5, f4, f3, f2, m5, m4, m3, m2):
         )
     )
 
-    # Assign F score
-    def calculate_f_rank(frequency, thresholds):
+# Assign F score
+def calculate_f_rank(frequency, thresholds):
     if pd.notna(frequency):
         for i, threshold in enumerate(thresholds, start=1):
             if frequency <= threshold:
