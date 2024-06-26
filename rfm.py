@@ -528,15 +528,21 @@ try:
 
         st.plotly_chart(fig)
 
-    if selected_button == "TO DO Analysis":
+        if selected_button == "TO DO Analysis":
         st.markdown("## Recommended Strategy")
-
+    
         # Function to get recommendation from OpenAI
         def get_recommendation():
-            openai.api_key = st.secrets["OPENAI_TOKEN"]
+            try:
+                openai.api_key = st.secrets["OPENAI_TOKEN"]
+                st.write(f"Loaded OpenAI token: {openai.api_key[:4]}...")  # Display part of the token for verification
+            except KeyError as e:
+                st.error(f"Error loading OpenAI token: {e}")
+                return None
+    
             # Convert the filtered data frame to a CSV string
             filtered_data_str = filtered_category_df.to_csv(index=False)
-
+    
             prompt = (
                 f"Based on the RFM analysis, provide a detailed and comprehensive description of the customers across all 11 segments. "
                 f"The data includes customer information categorized by RFM segments. Analyze all segments together, highlighting the differences and similarities among them. Group segments with similar patterns and provide a combined analysis. Follow this detailed structure:\n\n"
@@ -570,7 +576,7 @@ try:
                 f"    - Eval 5: Assess the feasibility and relevance of the engagement recommendations.\n\n"
                 f"Here is the data:\n{filtered_data_str}"
             )
-
+    
             try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
@@ -589,12 +595,8 @@ try:
             except Exception as e:
                 st.error(f"Error with OpenAI request: {e}")
                 return None
-
+    
         try:
-            # Test if the secret key is correctly loaded
-            openai_token = st.secrets["OPENAI_TOKEN"]
-            st.write("OpenAI token loaded successfully.")
-
             recommendation = get_recommendation()
             if recommendation:
                 st.markdown(recommendation)
@@ -602,14 +604,9 @@ try:
                 st.write(
                     "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
                 )
-        except KeyError as e:
-            st.error(f"Error loading OpenAI token: {e}")
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
-            st.write("This feature is temporarily unavailable due to API quota limits.")
-
-
-except FileNotFoundError:
-    st.error(f"File not found at path {csv_path}.")
-except Exception as e:
-    st.error(f"An error occurred while loading the file: {e}")
+                
+    except KeyError as e:
+        st.error(f"Error loading OpenAI token: {e}")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
+        st.write("This feature is temporarily unavailable due to API quota limits.")
