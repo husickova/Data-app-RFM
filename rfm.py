@@ -604,11 +604,11 @@ try:
                 st.write(
                     "No recommendation received. This feature may be temporarily unavailable due to API quota limits."
                 )
-    except KeyError as e:
-        st.error(f"Error loading OpenAI token: {e}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-        st.write("This feature is temporarily unavailable due to API quota limits.")
+        except KeyError as e:
+            st.error(f"Error loading OpenAI token: {e}")
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+            st.write("This feature is temporarily unavailable due to API quota limits.")
 
 except FileNotFoundError:
     st.error(f"File not found at path {csv_path}.")
