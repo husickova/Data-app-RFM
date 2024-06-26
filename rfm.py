@@ -564,10 +564,10 @@ try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo-16k",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": "You are a data analyst."},
                         {"role": "user", "content": prompt},
                     ],
-                    max_tokens=2000,  # Increase the number of max tokens
+                    max_tokens=1000,  # Increase the number of max tokens
                     temperature=0.7,  # Adjust the temperature for more creative responses
                 )
                 # Kontrola struktury odpovědi
@@ -596,7 +596,7 @@ try:
                 response = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo-16k",
                     messages=[
-                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "system", "content": "You are a data analyst."},
                         {"role": "user", "content": prompt},
                     ],
                     max_tokens=50
