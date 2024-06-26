@@ -548,7 +548,7 @@ try:
                 f"Analyze each segment individually, following this specific category order and structure:\n\n"
                 
                 f"Champions:\n"
-                f"Customer Value: 1 key sentence about this category business\n"
+                f"Customer Value: 1 key sentence about this category business (put it a new line)\n"
                 f"Engagement Recommendations:\n"
                 f"    Provide 2 key recommendations on how to engage with Champions.\n\n"
                 
