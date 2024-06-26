@@ -604,7 +604,7 @@ try:
 
                 f"! Make all names of Category bold\n"
                 f"! Make all names like customer value and engagement recommendations bold\n"
-                f"! Didnt use word RFM skore, recency, frequency and monetary\n"
+                f"! Didnt use word RFM skore\n"
                 f"! Follow the structure\n"
 
                 f"Here is the data:\n{filtered_data_str}"
