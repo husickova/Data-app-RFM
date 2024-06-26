@@ -573,12 +573,12 @@ try:
     
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4-32k",
+                    model="gpt-4",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
                     ],
-                    max_tokens=1000,  # Increase the number of max tokens
+                    max_tokens=2000,  # Increase the number of max tokens
                     temperature=0.7,  # Adjust the temperature for more creative responses
                 )
                 # Kontrola struktury odpovědi
@@ -605,7 +605,7 @@ try:
             prompt = "This isn't a test"
             try:
                 response = openai.ChatCompletion.create(
-                    model="gpt-4-32k",
+                    model="gpt-4",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant."},
                         {"role": "user", "content": prompt},
